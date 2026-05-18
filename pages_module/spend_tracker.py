@@ -99,7 +99,7 @@ def render():
             st.info("No transactions yet. Add your first one in the 'Add Transaction' tab.")
         else:
             st.dataframe(df)
-            validated = df_display[df_display['status'] == 'VALIDATED'].copy()
+            validated = df[df['status'] == 'VALIDATED'].copy()
 
             if validated.empty:
                 st.info("No validated transactions yet.")

@@ -194,10 +194,6 @@ def render():
     with tab_add:
         st.markdown("### New Transaction")
 
-        if not API_URL:
-            st.error("API_GATEWAY_URL not set in Streamlit secrets. Please add it.")
-            return
-
         with st.form("add_txn_form", clear_on_submit=True):
             col1, col2 = st.columns(2)
             with col1:

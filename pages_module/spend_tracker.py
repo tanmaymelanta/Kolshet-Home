@@ -100,7 +100,7 @@ def render():
         else:
             validated = df[df['status'] == 'VALIDATED'].copy()
 
-        total_spend = df[['transaction_id', 'amount']].drop_duplicates()['amount'].sum()
+        total_spend = df[['transaction_id', 'expected_amount']].drop_duplicates()['expected_amount'].sum()
         num_txns = len(validated['transaction_id'].unique())
         top_category = validated.groupby('category')['expected_amount'].sum().idxmax()
 

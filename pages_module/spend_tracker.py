@@ -215,22 +215,24 @@ def render():
             submitted = st.form_submit_button("🚀 Submit Transaction", use_container_width=True)
 
         if submitted:
-            if not txn_id or amount <= 0:
+            if not API_URL:
+                st.error("API_GATEWAY_URL not set in Streamlit secrets.")
+            elif not txn_id or amount <= 0:
                 st.error("Transaction ID and Amount are required.")
             elif not uploaded_files:
                 st.error("Please upload at least one supporting document.")
             else:
                 txn_date_str = txn_date.strftime('%Y%m%d')
                 amount_str = str(int(amount)) if amount == int(amount) else str(amount)
-
+        
                 progress = st.progress(0, text="Submitting...")
                 errors = []
-
+        
                 for i, file in enumerate(uploaded_files):
                     doc_index = i + 1
                     file_ext = file.name.rsplit('.', 1)[-1].lower()
                     content_type = get_content_type(file.name)
-
+        
                     try:
                         progress.progress(
                             int((i / len(uploaded_files)) * 50),
@@ -240,18 +242,18 @@ def render():
                             txn_id, txn_date_str, amount_str,
                             category, doc_index, file_ext, content_type, comments
                         )
-
+        
                         progress.progress(
                             int((i / len(uploaded_files)) * 50) + 50,
                             text=f"Uploading document {doc_index} to S3..."
                         )
                         upload_to_presigned_url(result['upload_url'], file.read(), content_type)
-
+        
                     except Exception as e:
                         errors.append(f"Doc {doc_index} ({file.name}): {e}")
-
+        
                 progress.progress(100, text="Done!")
-
+        
                 if errors:
                     st.warning("Some documents failed:")
                     for err in errors:

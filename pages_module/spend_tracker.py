@@ -101,88 +101,86 @@ def render():
             validated = df[df['status'] == 'VALIDATED'].copy()
 
         total_spend = df[['transaction_id', 'amount']].drop_duplicates()['amount'].sum()
-        # grouped_df = (df.groupby(["transaction_id","txn_date","category","comments","expected_amount",]
-        # total_spend = validated['expected_amount'].sum()
         num_txns = len(validated['transaction_id'].unique())
         top_category = validated.groupby('category')['expected_amount'].sum().idxmax()
 
-                c1, c2, c3 = st.columns(3)
-                c1.metric("Total Spend", f"₹{total_spend:,.0f}")
-                c2.metric("Transactions", num_txns)
-                c3.metric("Top Category", top_category)
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Total Spend", f"₹{total_spend:,.0f}")
+        c2.metric("Transactions", num_txns)
+        c3.metric("Top Category", top_category)
 
-                st.markdown("---")
+        st.markdown("---")
 
-                col_left, col_right = st.columns(2)
+        col_left, col_right = st.columns(2)
 
-                with col_left:
-                    st.markdown("#### Spend by Category")
-                    cat_df = validated.groupby('category')['expected_amount'].sum().reset_index()
-                    fig_pie = px.pie(
-                        cat_df, values='expected_amount', names='category',
-                        color_discrete_sequence=px.colors.qualitative.Set2,
-                        hole=0.4
-                    )
-                    fig_pie.update_layout(margin=dict(t=10, b=10), height=320)
-                    st.plotly_chart(fig_pie, use_container_width=True)
-
-                with col_right:
-                    st.markdown("#### Monthly Spend")
-                    validated['month'] = validated['txn_date'].apply(
-                        lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m') if len(str(d)) == 8 else d[:7]
-                    )
-                    monthly = validated.groupby('month')['expected_amount'].sum().reset_index()
-                    monthly = monthly.sort_values('month')
-                    fig_bar = px.bar(
-                        monthly, x='month', y='expected_amount',
-                        color_discrete_sequence=["#3498db"],
-                        labels={'expected_amount': 'Amount (₹)', 'month': 'Month'}
-                    )
-                    fig_bar.update_layout(margin=dict(t=10, b=10), height=320)
-                    st.plotly_chart(fig_bar, use_container_width=True)
-
-                st.markdown("#### Category-wise Spend Over Time")
-                validated['month'] = validated['txn_date'].apply(
-                    lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m') if len(str(d)) == 8 else d[:7]
-                )
-                pivot = validated.groupby(['month', 'category'])['expected_amount'].sum().reset_index()
-                fig_stack = px.bar(
-                    pivot, x='month', y='expected_amount', color='category',
-                    color_discrete_sequence=px.colors.qualitative.Set2,
-                    labels={'expected_amount': 'Amount (₹)', 'month': 'Month'}
-                )
-                fig_stack.update_layout(margin=dict(t=10, b=10), height=350)
-                st.plotly_chart(fig_stack, use_container_width=True)
-
-            # Always show full table regardless of validation status
-            st.markdown("---")
-            st.markdown("#### All Transactions")
-
-            status_filter = st.multiselect(
-                "Filter by status",
-                options=df['status'].unique().tolist(),
-                default=df['status'].unique().tolist()
+        with col_left:
+            st.markdown("#### Spend by Category")
+            cat_df = validated.groupby('category')['expected_amount'].sum().reset_index()
+            fig_pie = px.pie(
+                cat_df, values='expected_amount', names='category',
+                color_discrete_sequence=px.colors.qualitative.Set2,
+                hole=0.4
             )
+            fig_pie.update_layout(margin=dict(t=10, b=10), height=320)
+            st.plotly_chart(fig_pie, use_container_width=True)
 
-            filtered = df[df['status'].isin(status_filter)]
-
-            status_colors = {
-                'VALIDATED': '🟢',
-                'AMOUNT_MISMATCH': '🟡',
-                'OCR_FAILED': '🔴',
-                'PENDING': '⚪'
-            }
-
-            display = filtered[[
-                'transaction_id', 'txn_date', 'category',
-                'expected_amount', 'ocr_amount', 'status', 'comments'
-            ]].copy()
-            display['status'] = display['status'].apply(lambda s: f"{status_colors.get(s, '')} {s}")
-            display['txn_date'] = display['txn_date'].apply(
-                lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%d %b %Y') if len(str(d)) == 8 else d
+        with col_right:
+            st.markdown("#### Monthly Spend")
+            validated['month'] = validated['txn_date'].apply(
+                lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m') if len(str(d)) == 8 else d[:7]
             )
-            display.columns = ['Txn ID', 'Date', 'Category', 'Expected (₹)', 'OCR Amount (₹)', 'Status', 'Comments']
-            st.dataframe(display, use_container_width=True, hide_index=True)
+            monthly = validated.groupby('month')['expected_amount'].sum().reset_index()
+            monthly = monthly.sort_values('month')
+            fig_bar = px.bar(
+                monthly, x='month', y='expected_amount',
+                color_discrete_sequence=["#3498db"],
+                labels={'expected_amount': 'Amount (₹)', 'month': 'Month'}
+            )
+            fig_bar.update_layout(margin=dict(t=10, b=10), height=320)
+            st.plotly_chart(fig_bar, use_container_width=True)
+
+        st.markdown("#### Category-wise Spend Over Time")
+        validated['month'] = validated['txn_date'].apply(
+            lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m') if len(str(d)) == 8 else d[:7]
+        )
+        pivot = validated.groupby(['month', 'category'])['expected_amount'].sum().reset_index()
+        fig_stack = px.bar(
+            pivot, x='month', y='expected_amount', color='category',
+            color_discrete_sequence=px.colors.qualitative.Set2,
+            labels={'expected_amount': 'Amount (₹)', 'month': 'Month'}
+        )
+        fig_stack.update_layout(margin=dict(t=10, b=10), height=350)
+        st.plotly_chart(fig_stack, use_container_width=True)
+
+    # Always show full table regardless of validation status
+    st.markdown("---")
+    st.markdown("#### All Transactions")
+
+    status_filter = st.multiselect(
+        "Filter by status",
+        options=df['status'].unique().tolist(),
+        default=df['status'].unique().tolist()
+    )
+
+    filtered = df[df['status'].isin(status_filter)]
+
+    status_colors = {
+        'VALIDATED': '🟢',
+        'AMOUNT_MISMATCH': '🟡',
+        'OCR_FAILED': '🔴',
+        'PENDING': '⚪'
+    }
+
+    display = filtered[[
+        'transaction_id', 'txn_date', 'category',
+        'expected_amount', 'ocr_amount', 'status', 'comments'
+    ]].copy()
+    display['status'] = display['status'].apply(lambda s: f"{status_colors.get(s, '')} {s}")
+    display['txn_date'] = display['txn_date'].apply(
+        lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%d %b %Y') if len(str(d)) == 8 else d
+    )
+    display.columns = ['Txn ID', 'Date', 'Category', 'Expected (₹)', 'OCR Amount (₹)', 'Status', 'Comments']
+    st.dataframe(display, use_container_width=True, hide_index=True)
 
     # ── Add transaction tab ───────────────────────────────────────────────────
     with tab_add:

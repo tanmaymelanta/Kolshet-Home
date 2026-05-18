@@ -3,16 +3,14 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import requests
-import uuid
 from datetime import date, datetime
 from decimal import Decimal
-from boto3.dynamodb.conditions import Attr
 from aws_helpers import (
     get_dynamodb_resource, get_s3_client,
     TRANSACTIONS_TABLE, SPEND_CATEGORIES, BUCKET_NAME
 )
 
-API_URL = st.secrets.get("API_GATEWAY_URL", "")  # e.g. https://xyz.execute-api.ap-south-1.amazonaws.com/dev
+API_URL = st.secrets.get("API_GATEWAY_URL", "")
 
 
 # ── DynamoDB helpers ──────────────────────────────────────────────────────────
@@ -24,7 +22,6 @@ def load_transactions():
         response = table.scan()
         items = response.get('Items', [])
 
-        # Handle pagination
         while 'LastEvaluatedKey' in response:
             response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
             items.extend(response.get('Items', []))
@@ -100,95 +97,93 @@ def render():
 
         if df.empty:
             st.info("No transactions yet. Add your first one in the 'Add Transaction' tab.")
-            return
-
-        # Filter to validated only for spend analysis
-        validated = df[df['status'] == 'VALIDATED'].copy()
-
-        if validated.empty:
-            st.info("No validated transactions yet.")
         else:
-            total_spend = validated['expected_amount'].sum()
-            num_txns = len(validated['transaction_id'].unique())
-            top_category = validated.groupby('category')['expected_amount'].sum().idxmax()
+            validated = df[df['status'] == 'VALIDATED'].copy()
 
-            c1, c2, c3 = st.columns(3)
-            c1.metric("Total Spend", f"₹{total_spend:,.0f}")
-            c2.metric("Transactions", num_txns)
-            c3.metric("Top Category", top_category)
+            if validated.empty:
+                st.info("No validated transactions yet.")
+            else:
+                total_spend = validated['expected_amount'].sum()
+                num_txns = len(validated['transaction_id'].unique())
+                top_category = validated.groupby('category')['expected_amount'].sum().idxmax()
 
-            st.markdown("---")
+                c1, c2, c3 = st.columns(3)
+                c1.metric("Total Spend", f"₹{total_spend:,.0f}")
+                c2.metric("Transactions", num_txns)
+                c3.metric("Top Category", top_category)
 
-            col_left, col_right = st.columns(2)
+                st.markdown("---")
 
-            with col_left:
-                st.markdown("#### Spend by Category")
-                cat_df = validated.groupby('category')['expected_amount'].sum().reset_index()
-                fig_pie = px.pie(
-                    cat_df, values='expected_amount', names='category',
-                    color_discrete_sequence=px.colors.qualitative.Set2,
-                    hole=0.4
-                )
-                fig_pie.update_layout(margin=dict(t=10, b=10), height=320)
-                st.plotly_chart(fig_pie, use_container_width=True)
+                col_left, col_right = st.columns(2)
 
-            with col_right:
-                st.markdown("#### Monthly Spend")
+                with col_left:
+                    st.markdown("#### Spend by Category")
+                    cat_df = validated.groupby('category')['expected_amount'].sum().reset_index()
+                    fig_pie = px.pie(
+                        cat_df, values='expected_amount', names='category',
+                        color_discrete_sequence=px.colors.qualitative.Set2,
+                        hole=0.4
+                    )
+                    fig_pie.update_layout(margin=dict(t=10, b=10), height=320)
+                    st.plotly_chart(fig_pie, use_container_width=True)
+
+                with col_right:
+                    st.markdown("#### Monthly Spend")
+                    validated['month'] = validated['txn_date'].apply(
+                        lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m') if len(str(d)) == 8 else d[:7]
+                    )
+                    monthly = validated.groupby('month')['expected_amount'].sum().reset_index()
+                    monthly = monthly.sort_values('month')
+                    fig_bar = px.bar(
+                        monthly, x='month', y='expected_amount',
+                        color_discrete_sequence=["#3498db"],
+                        labels={'expected_amount': 'Amount (₹)', 'month': 'Month'}
+                    )
+                    fig_bar.update_layout(margin=dict(t=10, b=10), height=320)
+                    st.plotly_chart(fig_bar, use_container_width=True)
+
+                st.markdown("#### Category-wise Spend Over Time")
                 validated['month'] = validated['txn_date'].apply(
                     lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m') if len(str(d)) == 8 else d[:7]
                 )
-                monthly = validated.groupby('month')['expected_amount'].sum().reset_index()
-                monthly = monthly.sort_values('month')
-                fig_bar = px.bar(
-                    monthly, x='month', y='expected_amount',
-                    color_discrete_sequence=["#3498db"],
+                pivot = validated.groupby(['month', 'category'])['expected_amount'].sum().reset_index()
+                fig_stack = px.bar(
+                    pivot, x='month', y='expected_amount', color='category',
+                    color_discrete_sequence=px.colors.qualitative.Set2,
                     labels={'expected_amount': 'Amount (₹)', 'month': 'Month'}
                 )
-                fig_bar.update_layout(margin=dict(t=10, b=10), height=320)
-                st.plotly_chart(fig_bar, use_container_width=True)
+                fig_stack.update_layout(margin=dict(t=10, b=10), height=350)
+                st.plotly_chart(fig_stack, use_container_width=True)
 
-            st.markdown("#### Category-wise Spend Over Time")
-            validated['month'] = validated['txn_date'].apply(
-                lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m') if len(str(d)) == 8 else d[:7]
+            # Always show full table regardless of validation status
+            st.markdown("---")
+            st.markdown("#### All Transactions")
+
+            status_filter = st.multiselect(
+                "Filter by status",
+                options=df['status'].unique().tolist(),
+                default=df['status'].unique().tolist()
             )
-            pivot = validated.groupby(['month', 'category'])['expected_amount'].sum().reset_index()
-            fig_stack = px.bar(
-                pivot, x='month', y='expected_amount', color='category',
-                color_discrete_sequence=px.colors.qualitative.Set2,
-                labels={'expected_amount': 'Amount (₹)', 'month': 'Month'}
+
+            filtered = df[df['status'].isin(status_filter)]
+
+            status_colors = {
+                'VALIDATED': '🟢',
+                'AMOUNT_MISMATCH': '🟡',
+                'OCR_FAILED': '🔴',
+                'PENDING': '⚪'
+            }
+
+            display = filtered[[
+                'transaction_id', 'txn_date', 'category',
+                'expected_amount', 'ocr_amount', 'status', 'comments'
+            ]].copy()
+            display['status'] = display['status'].apply(lambda s: f"{status_colors.get(s, '')} {s}")
+            display['txn_date'] = display['txn_date'].apply(
+                lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%d %b %Y') if len(str(d)) == 8 else d
             )
-            fig_stack.update_layout(margin=dict(t=10, b=10), height=350)
-            st.plotly_chart(fig_stack, use_container_width=True)
-
-        # ── Full transaction table ─────────────────────────────────────────────
-        st.markdown("---")
-        st.markdown("#### All Transactions")
-
-        status_filter = st.multiselect(
-            "Filter by status",
-            options=df['status'].unique().tolist(),
-            default=df['status'].unique().tolist()
-        )
-
-        filtered = df[df['status'].isin(status_filter)]
-
-        status_colors = {
-            'VALIDATED': '🟢',
-            'AMOUNT_MISMATCH': '🟡',
-            'OCR_FAILED': '🔴',
-            'PENDING': '⚪'
-        }
-
-        display = filtered[[
-            'transaction_id', 'txn_date', 'category',
-            'expected_amount', 'ocr_amount', 'status', 'comments'
-        ]].copy()
-        display['status'] = display['status'].apply(lambda s: f"{status_colors.get(s, '')} {s}")
-        display['txn_date'] = display['txn_date'].apply(
-            lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%d %b %Y') if len(str(d)) == 8 else d
-        )
-        display.columns = ['Txn ID', 'Date', 'Category', 'Expected (₹)', 'OCR Amount (₹)', 'Status', 'Comments']
-        st.dataframe(display, use_container_width=True, hide_index=True)
+            display.columns = ['Txn ID', 'Date', 'Category', 'Expected (₹)', 'OCR Amount (₹)', 'Status', 'Comments']
+            st.dataframe(display, use_container_width=True, hide_index=True)
 
     # ── Add transaction tab ───────────────────────────────────────────────────
     with tab_add:
@@ -224,15 +219,15 @@ def render():
             else:
                 txn_date_str = txn_date.strftime('%Y%m%d')
                 amount_str = str(int(amount)) if amount == int(amount) else str(amount)
-        
+
                 progress = st.progress(0, text="Submitting...")
                 errors = []
-        
+
                 for i, file in enumerate(uploaded_files):
                     doc_index = i + 1
                     file_ext = file.name.rsplit('.', 1)[-1].lower()
                     content_type = get_content_type(file.name)
-        
+
                     try:
                         progress.progress(
                             int((i / len(uploaded_files)) * 50),
@@ -242,18 +237,18 @@ def render():
                             txn_id, txn_date_str, amount_str,
                             category, doc_index, file_ext, content_type, comments
                         )
-        
+
                         progress.progress(
                             int((i / len(uploaded_files)) * 50) + 50,
                             text=f"Uploading document {doc_index} to S3..."
                         )
                         upload_to_presigned_url(result['upload_url'], file.read(), content_type)
-        
+
                     except Exception as e:
                         errors.append(f"Doc {doc_index} ({file.name}): {e}")
-        
+
                 progress.progress(100, text="Done!")
-        
+
                 if errors:
                     st.warning("Some documents failed:")
                     for err in errors:

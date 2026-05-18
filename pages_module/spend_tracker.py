@@ -86,50 +86,50 @@ def render():
     with (tab_dashboard):
         df = load_transactions()
 
-        # valid_df = df[df['status'] == 'VALIDATED'].copy()
-        # invalid_df = df[df['status'] != 'VALIDATED'].copy()
-        # transactions_df =df[['transaction_id', 'txn_date', 'category', 'comments', 'expected_amount']].drop_duplicates().copy()
-        # transactions_df['transaction_date'] = transactions_df['txn_date'].apply(lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m-%d') if len(str(d)) == 8 else d[:7])
+        valid_df = df[df['status'] == 'VALIDATED'].copy()
+        invalid_df = df[df['status'] != 'VALIDATED'].copy()
+        transactions_df =df[['transaction_id', 'txn_date', 'category', 'comments', 'expected_amount']].drop_duplicates().copy()
+        transactions_df['transaction_date'] = transactions_df['txn_date'].apply(lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m-%d') if len(str(d)) == 8 else d[:7])
 
-        # total_spend = transactions_df['expected_amount'].sum()
-        # num_txns = len(transactions_df['transaction_id'].unique())
-        # valid_count = len(valid_df)
-        # invalid_count = len(invalid_df)
+        total_spend = transactions_df['expected_amount'].sum()
+        num_txns = len(transactions_df['transaction_id'].unique())
+        valid_count = len(valid_df)
+        invalid_count = len(invalid_df)
 
-        # c1, c2, c3, c4 = st.columns(4)
-        # c1.metric("Total Spend", f"₹{total_spend:,.0f}")
-        # c2.metric("Transactions", num_txns)
-        # c3.metric("Valid Documents", valid_count)
-        # # c4.metric("Invalid Documents", invalid_count)
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Total Spend", f"₹{total_spend:,.0f}")
+        c2.metric("Transactions", num_txns)
+        c3.metric("Valid Documents", valid_count)
+        # c4.metric("Invalid Documents", invalid_count)
 
-        # st.markdown("---")
+        st.markdown("---")
 
-        # col_left, col_right = st.columns([2, 3])
-        # with col_left:
-        #     st.markdown("#### Spend by Category")
-        #     cat_df = transactions_df.groupby('category')['expected_amount'].sum().reset_index()
-        #     fig_pie = px.pie(cat_df, values='expected_amount', names='category', color_discrete_sequence=px.colors.qualitative.Set2, hole=0.4)
-        #     fig_pie.update_traces(textposition='outside', texttemplate='%{label}<br>₹%{value:,.0f}', textfont=dict(color='white', size=14))
-        #     fig_pie.update_layout(margin=dict(t=10, b=10, l=20, r=20), height=380, uniformtext_minsize=10, uniformtext_mode='show')
-        #     st.plotly_chart(fig_pie, use_container_width=True)
+        col_left, col_right = st.columns([2, 3])
+        with col_left:
+            st.markdown("#### Spend by Category")
+            cat_df = transactions_df.groupby('category')['expected_amount'].sum().reset_index()
+            fig_pie = px.pie(cat_df, values='expected_amount', names='category', color_discrete_sequence=px.colors.qualitative.Set2, hole=0.4)
+            fig_pie.update_traces(textposition='outside', texttemplate='%{label}<br>₹%{value:,.0f}', textfont=dict(color='white', size=14))
+            fig_pie.update_layout(margin=dict(t=10, b=10, l=20, r=20), height=380, uniformtext_minsize=10, uniformtext_mode='show')
+            st.plotly_chart(fig_pie, use_container_width=True)
 
-        # with col_right:
-        #     st.markdown("#### Daily Spend")
-        #     fig_bar = px.bar(transactions_df, x='transaction_date', y='expected_amount', color_discrete_sequence=["#3498db"], labels={'expected_amount': 'Amount (₹)', 'transaction_date': 'Date'})
-        #     fig_bar.update_layout(margin=dict(t=10, b=10, l=20, r=20), height=380)
-        #     st.plotly_chart(fig_bar, use_container_width=True)
+        with col_right:
+            st.markdown("#### Daily Spend")
+            fig_bar = px.bar(transactions_df, x='transaction_date', y='expected_amount', color_discrete_sequence=["#3498db"], labels={'expected_amount': 'Amount (₹)', 'transaction_date': 'Date'})
+            fig_bar.update_layout(margin=dict(t=10, b=10, l=20, r=20), height=380)
+            st.plotly_chart(fig_bar, use_container_width=True)
 
-        # st.markdown("---")
-        # st.markdown("#### All Transactions")
-        # status_filter = st.multiselect("Filter by status", options=df['status'].unique().tolist(), default=df['status'].unique().tolist())
-        # filtered = df[df['status'].isin(status_filter)]
-        # status_colors = {'VALIDATED': '🟢', 'AMOUNT_MISMATCH': '🟡', 'OCR_FAILED': '🔴', 'PENDING': '⚪'}
-        # display = filtered[['transaction_id', 'document_id', 'txn_date', 'category', 'expected_amount', 'status', 'comments', 's3_path']].copy()
-        # display['status'] = display['status'].apply(lambda s: f"{status_colors.get(s, '')} {s}")
-        # display['s3_path'] = display['s3_path'].str.split('receipt-vault/validated/').str[1]
-        # display['txn_date'] = display['txn_date'].apply(lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%d %b %Y') if len(str(d)) == 8 else d)
-        # display.columns = ['Txn ID', 'Doc ID', 'Date', 'Category', 'Expected (₹)', 'Status', 'Comments', 'Doc Link']
-        # st.dataframe(display, use_container_width=True, hide_index=True)
+        st.markdown("---")
+        st.markdown("#### All Transactions")
+        status_filter = st.multiselect("Filter by status", options=df['status'].unique().tolist(), default=df['status'].unique().tolist())
+        filtered = df[df['status'].isin(status_filter)]
+        status_colors = {'VALIDATED': '🟢', 'AMOUNT_MISMATCH': '🟡', 'OCR_FAILED': '🔴', 'PENDING': '⚪'}
+        display = filtered[['transaction_id', 'document_id', 'txn_date', 'category', 'expected_amount', 'status', 'comments', 's3_path']].copy()
+        display['status'] = display['status'].apply(lambda s: f"{status_colors.get(s, '')} {s}")
+        display['s3_path'] = display['s3_path'].str.split('receipt-vault/validated/').str[1]
+        display['txn_date'] = display['txn_date'].apply(lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%d %b %Y') if len(str(d)) == 8 else d)
+        display.columns = ['Txn ID', 'Doc ID', 'Date', 'Category', 'Expected (₹)', 'Status', 'Comments', 'Doc Link']
+        st.dataframe(display, use_container_width=True, hide_index=True)
 
     # ── Add transaction tab ───────────────────────────────────────────────────
     with tab_add:

@@ -95,30 +95,10 @@ def render():
     with tab_dashboard:
         df = load_transactions()
 
-        # ── De-duplicate: one row per transaction ─────────────────────────────────
-        if not df.empty:
-            def resolve_status(statuses):
-                if all(s == 'VALIDATED' for s in statuses):
-                    return 'VALIDATED'
-                non_validated = [s for s in statuses if s != 'VALIDATED']
-                priority = {'PENDING': 0, 'OCR_FAILED': 1, 'AMOUNT_MISMATCH': 2}
-                return max(non_validated, key=lambda s: priority.get(s, 0)) if non_validated else 'VALIDATED'
-        
-            df_display = df.groupby('transaction_id').agg(
-                txn_date=('txn_date', 'first'),
-                category=('category', 'first'),
-                comments=('comments', 'first'),
-                expected_amount=('expected_amount', 'first'),
-                ocr_amount=('ocr_amount', 'max'),
-                status=('status', resolve_status),
-                doc_count=('document_id', 'count')
-            ).reset_index()
-        else:
-            df_display = df.copy()
-
         if df.empty:
             st.info("No transactions yet. Add your first one in the 'Add Transaction' tab.")
         else:
+            st.dataframe(df)
             validated = df_display[df_display['status'] == 'VALIDATED'].copy()
 
             if validated.empty:

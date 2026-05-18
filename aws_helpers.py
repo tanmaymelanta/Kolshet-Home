@@ -27,4 +27,4 @@ LOAN_CONFIG_TABLE = "loan_config"
 DOCUMENT_CATEGORIES = ["Legal", "Bank", "Government", "Registration", "Other"]
 DOCUMENT_PREFIX = "important-documents/"
 
-SPEND_CATEGORIES = ["Home Price", "Home Expenses"]
+SPEND_CATEGORIES = ["Home Price", "Home Expenses", "Bank Charges"]

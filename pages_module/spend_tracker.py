@@ -10,11 +10,9 @@ from aws_helpers import (
     TRANSACTIONS_TABLE, SPEND_CATEGORIES, BUCKET_NAME
 )
 
-API_URL = st.secrets.get("API_GATEWAY_URL", "")
-
+API_URL = "https://a59tnednv1.execute-api.ap-south-1.amazonaws.com/dev"
 
 # ── DynamoDB helpers ──────────────────────────────────────────────────────────
-
 def load_transactions():
     try:
         db = get_dynamodb_resource()
@@ -44,9 +42,7 @@ def load_transactions():
         st.error(f"Could not load transactions: {e}")
         return pd.DataFrame()
 
-
 # ── Upload helpers ────────────────────────────────────────────────────────────
-
 def call_metadata_api(txn_id, txn_date, amount, category, doc_index, file_ext, content_type, comments):
     payload = {
         "transaction_id": txn_id,
@@ -62,7 +58,6 @@ def call_metadata_api(txn_id, txn_date, amount, category, doc_index, file_ext, c
     response.raise_for_status()
     return response.json()
 
-
 def upload_to_presigned_url(upload_url, file_bytes, content_type):
     response = requests.put(
         upload_url,
@@ -71,7 +66,6 @@ def upload_to_presigned_url(upload_url, file_bytes, content_type):
         timeout=30
     )
     response.raise_for_status()
-
 
 def get_content_type(filename):
     ext = filename.rsplit('.', 1)[-1].lower()
@@ -83,109 +77,63 @@ def get_content_type(filename):
     }
     return mapping.get(ext, 'application/octet-stream')
 
-
 # ── Render ────────────────────────────────────────────────────────────────────
-
 def render():
     st.title("💸 Spend Tracker")
-
     tab_dashboard, tab_add = st.tabs(["📊 Dashboard", "➕ Add Transaction"])
 
     # ── Dashboard tab ─────────────────────────────────────────────────────────
-    with tab_dashboard:
+    with (tab_dashboard):
         df = load_transactions()
 
-        if df.empty:
-            st.info("No transactions yet. Add your first one in the 'Add Transaction' tab.")
-        else:
-            validated = df[df['status'] == 'VALIDATED'].copy()
+        valid_df = df[df['status'] == 'VALIDATED'].copy()
+        invalid_df = df[df['status'] != 'VALIDATED'].copy()
+        transactions_df =df[['transaction_id', 'txn_date', 'category', 'comments', 'expected_amount']].drop_duplicates().copy()
+        transactions_df['transaction_date'] = transactions_df['txn_date'].apply(lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m-%d') if len(str(d)) == 8 else d[:7])
 
-        total_spend = df[['transaction_id', 'expected_amount']].drop_duplicates()['expected_amount'].sum()
-        num_txns = len(validated['transaction_id'].unique())
-        top_category = validated.groupby('category')['expected_amount'].sum().idxmax()
+        total_spend = transactions_df['expected_amount'].sum()
+        num_txns = len(transactions_df['transaction_id'].unique())
+        valid_count = len(valid_df)
+        invalid_count = len(invalid_df)
 
-        c1, c2, c3 = st.columns(3)
+        c1, c2, c3, c4 = st.columns(4)
         c1.metric("Total Spend", f"₹{total_spend:,.0f}")
         c2.metric("Transactions", num_txns)
-        c3.metric("Top Category", top_category)
+        c3.metric("Valid Documents", valid_count)
+        c4.metric("Invalid Documents", invalid_count)
 
         st.markdown("---")
 
-        col_left, col_right = st.columns(2)
-
+        col_left, col_right = st.columns([2, 3])
         with col_left:
             st.markdown("#### Spend by Category")
-            cat_df = validated.groupby('category')['expected_amount'].sum().reset_index()
-            fig_pie = px.pie(
-                cat_df, values='expected_amount', names='category',
-                color_discrete_sequence=px.colors.qualitative.Set2,
-                hole=0.4
-            )
-            fig_pie.update_layout(margin=dict(t=10, b=10), height=320)
+            cat_df = transactions_df.groupby('category')['expected_amount'].sum().reset_index()
+            fig_pie = px.pie(cat_df, values='expected_amount', names='category', color_discrete_sequence=px.colors.qualitative.Set2, hole=0.4)
+            fig_pie.update_traces(textposition='outside', texttemplate='%{label}<br>₹%{value:,.0f}', textfont=dict(color='white', size=14))
+            fig_pie.update_layout(margin=dict(t=10, b=10, l=20, r=20), height=380, uniformtext_minsize=10, uniformtext_mode='show')
             st.plotly_chart(fig_pie, use_container_width=True)
 
         with col_right:
-            st.markdown("#### Monthly Spend")
-            validated['month'] = validated['txn_date'].apply(
-                lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m') if len(str(d)) == 8 else d[:7]
-            )
-            monthly = validated.groupby('month')['expected_amount'].sum().reset_index()
-            monthly = monthly.sort_values('month')
-            fig_bar = px.bar(
-                monthly, x='month', y='expected_amount',
-                color_discrete_sequence=["#3498db"],
-                labels={'expected_amount': 'Amount (₹)', 'month': 'Month'}
-            )
-            fig_bar.update_layout(margin=dict(t=10, b=10), height=320)
+            st.markdown("#### Daily Spend")
+            fig_bar = px.bar(transactions_df, x='transaction_date', y='expected_amount', color_discrete_sequence=["#3498db"], labels={'expected_amount': 'Amount (₹)', 'transaction_date': 'Date'})
+            fig_bar.update_layout(margin=dict(t=10, b=10, l=20, r=20), height=380)
             st.plotly_chart(fig_bar, use_container_width=True)
 
-        st.markdown("#### Category-wise Spend Over Time")
-        validated['month'] = validated['txn_date'].apply(
-            lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m') if len(str(d)) == 8 else d[:7]
-        )
-        pivot = validated.groupby(['month', 'category'])['expected_amount'].sum().reset_index()
-        fig_stack = px.bar(
-            pivot, x='month', y='expected_amount', color='category',
-            color_discrete_sequence=px.colors.qualitative.Set2,
-            labels={'expected_amount': 'Amount (₹)', 'month': 'Month'}
-        )
-        fig_stack.update_layout(margin=dict(t=10, b=10), height=350)
-        st.plotly_chart(fig_stack, use_container_width=True)
-
-    # Always show full table regardless of validation status
-    st.markdown("---")
-    st.markdown("#### All Transactions")
-
-    status_filter = st.multiselect(
-        "Filter by status",
-        options=df['status'].unique().tolist(),
-        default=df['status'].unique().tolist()
-    )
-
-    filtered = df[df['status'].isin(status_filter)]
-
-    status_colors = {
-        'VALIDATED': '🟢',
-        'AMOUNT_MISMATCH': '🟡',
-        'OCR_FAILED': '🔴',
-        'PENDING': '⚪'
-    }
-
-    display = filtered[[
-        'transaction_id', 'txn_date', 'category',
-        'expected_amount', 'ocr_amount', 'status', 'comments'
-    ]].copy()
-    display['status'] = display['status'].apply(lambda s: f"{status_colors.get(s, '')} {s}")
-    display['txn_date'] = display['txn_date'].apply(
-        lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%d %b %Y') if len(str(d)) == 8 else d
-    )
-    display.columns = ['Txn ID', 'Date', 'Category', 'Expected (₹)', 'OCR Amount (₹)', 'Status', 'Comments']
-    st.dataframe(display, use_container_width=True, hide_index=True)
+        st.markdown("---")
+        st.markdown("#### All Transactions")
+        status_filter = st.multiselect("Filter by status", options=df['status'].unique().tolist(), default=df['status'].unique().tolist())
+        filtered = df[df['status'].isin(status_filter)]
+        status_colors = {'VALIDATED': '🟢', 'AMOUNT_MISMATCH': '🟡', 'OCR_FAILED': '🔴', 'PENDING': '⚪'}
+        display = filtered[['transaction_id', 'document_id', 'txn_date', 'category', 'expected_amount', 'status', 'comments', 's3_path']].copy()
+        display['status'] = display['status'].apply(lambda s: f"{status_colors.get(s, '')} {s}")
+        display['s3_path'] = display['s3_path'].str.split('receipt-vault/validated/').str[1]
+        display['txn_date'] = display['txn_date'].apply(lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%d %b %Y') if len(str(d)) == 8 else d)
+        display.columns = ['Txn ID', 'Doc ID', 'Date', 'Category', 'Expected (₹)', 'Status', 'Comments', 'Doc Link']
+        st.dataframe(display, use_container_width=True, hide_index=True)
 
     # ── Add transaction tab ───────────────────────────────────────────────────
     with tab_add:
         st.markdown("### New Transaction")
-
         with st.form("add_txn_form", clear_on_submit=True):
             col1, col2 = st.columns(2)
             with col1:

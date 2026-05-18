@@ -98,15 +98,13 @@ def render():
         if df.empty:
             st.info("No transactions yet. Add your first one in the 'Add Transaction' tab.")
         else:
-            st.dataframe(df)
             validated = df[df['status'] == 'VALIDATED'].copy()
 
-            if validated.empty:
-                st.info("No validated transactions yet.")
-            else:
-                total_spend = validated['expected_amount'].sum()
-                num_txns = len(validated['transaction_id'].unique())
-                top_category = validated.groupby('category')['expected_amount'].sum().idxmax()
+        total_spend = df[['transaction_id', 'amount']].drop_duplicates()['amount'].sum()
+        # grouped_df = (df.groupby(["transaction_id","txn_date","category","comments","expected_amount",]
+        # total_spend = validated['expected_amount'].sum()
+        num_txns = len(validated['transaction_id'].unique())
+        top_category = validated.groupby('category')['expected_amount'].sum().idxmax()
 
                 c1, c2, c3 = st.columns(3)
                 c1.metric("Total Spend", f"₹{total_spend:,.0f}")

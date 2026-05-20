@@ -136,8 +136,12 @@ def render():
     # ── Add transaction tab ───────────────────────────────────────────────────
     with tab_add:
         st.markdown("### New Transaction")
-        category = st.selectbox("Category *", list(SPEND_CATEGORIES.keys()), key="category")
-        sub_category = st.selectbox("Sub Category *", SPEND_CATEGORIES[category], key=f"subcategory_{category}")
+        txn_container = st.container(border=True)
+        with txn_container:
+            # These rerender dynamically
+            col1, col2 = st.columns(2)
+                category = st.selectbox("Category *", list(SPEND_CATEGORIES.keys()), key="category")
+                sub_category = st.selectbox("Sub Category *", SPEND_CATEGORIES[category], key=f"subcategory_{category}")
 
         with st.form("add_txn_form", clear_on_submit=True):
             col1, col2 = st.columns(2)

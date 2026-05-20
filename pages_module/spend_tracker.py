@@ -138,7 +138,6 @@ def render():
         st.markdown("### New Transaction")
         txn_container = st.container(border=True)
         with txn_container:
-        # with st.form("add_txn_form", clear_on_submit=True):
             col1, col2 = st.columns(2)
             with col1:
                 txn_id = st.text_input("Transaction ID *", placeholder="e.g. T2605161611411488265779")
@@ -152,7 +151,6 @@ def render():
             st.caption("Upload one or more receipts / statements / bills.")
             uploaded_files = st.file_uploader("Choose files", accept_multiple_files=True, type=['pdf', 'jpg', 'jpeg', 'png'])
             submitted = st.button("🚀 Submit Transaction", use_container_width=True)
-            # submitted = st.form_submit_button("🚀 Submit Transaction", use_container_width=True)
 
         if submitted:
             if not API_URL:

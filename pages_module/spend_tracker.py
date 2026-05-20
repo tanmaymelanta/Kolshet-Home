@@ -37,6 +37,7 @@ def load_transactions():
                 'ocr_amount': float(item.get('ocr_amount', 0)),
                 'status': item.get('status', ''),
                 's3_path': item.get('s3_path', ''),
+            }
        )
         return pd.DataFrame(records)
     except Exception as e:

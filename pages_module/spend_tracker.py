@@ -30,13 +30,14 @@ def load_transactions():
                 'transaction_id': item.get('transaction_id', ''),
                 'document_id': item.get('document_id', ''),
                 'txn_date': item.get('txn_date', ''),
-                'category': item.get('category', 'Other'),
+                'category': item.get('category', ''),
+                'sub_category': item.get('sub_category', ''),
                 'comments': item.get('comments', ''),
                 'expected_amount': float(item.get('expected_amount', 0)),
                 'ocr_amount': float(item.get('ocr_amount', 0)),
                 'status': item.get('status', ''),
                 's3_path': item.get('s3_path', ''),
-            })
+       )
         return pd.DataFrame(records)
     except Exception as e:
         st.error(f"Could not load transactions: {e}")

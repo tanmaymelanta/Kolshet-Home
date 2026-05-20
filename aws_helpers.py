@@ -27,4 +27,10 @@ LOAN_CONFIG_TABLE = "loan_config"
 DOCUMENT_CATEGORIES = ["Legal", "Bank", "Government", "Registration", "Other"]
 DOCUMENT_PREFIX = "important-documents/"
 
-SPEND_CATEGORIES = ["Home Price", "Home Expenses", "Bank Charges"]
+# SPEND_CATEGORIES = ["Home Price", "Home Expenses", "Bank Charges"]
+SPEND_CATEGORIES = {
+    "Property Acquisition": ["Token Amount", "Booking Amount", "Down Payment", "Registration", "Stamp Duty", "Brokerage", "Legal Fees"], 
+    "Loan & Banking": ["EMI", "EMI Principal", "EMI Interest", "Processing Fee", "Insurance", "Legal Verification"], 
+    "Improvement & Interiors": ["Modular Kitchen", "Electrical", "Plumbing", "Painting", "False Ceiling", "AC Installation", "Furniture"], 
+    "Maintenance & Society": ["Society Maintenance", "Repairs", "Cleaning", "Security Charges"]
+}

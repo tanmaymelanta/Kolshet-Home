@@ -138,22 +138,21 @@ def render():
         st.markdown("### New Transaction")
         txn_container = st.container(border=True)
         with txn_container:
-            col1, col2 = st.columns(2)
-                category = st.selectbox("Category *", list(SPEND_CATEGORIES.keys()), key="category")
-                sub_category = st.selectbox("Sub Category *", SPEND_CATEGORIES[category], key=f"subcategory_{category}")
-
-        with st.form("add_txn_form", clear_on_submit=True):
+        # with st.form("add_txn_form", clear_on_submit=True):
             col1, col2 = st.columns(2)
             with col1:
                 txn_id = st.text_input("Transaction ID *", placeholder="e.g. T2605161611411488265779")
+                category = st.selectbox("Category *", list(SPEND_CATEGORIES.keys()), key="category")
                 amount = st.number_input("Amount (₹) *", min_value=0)
             with col2:
                 txn_date = st.date_input("Transaction Date *", value=date.today())
+                sub_category = st.selectbox("Sub Category *", SPEND_CATEGORIES[category], key=f"subcategory_{category}")
                 comments = st.text_area("Comments (optional)", placeholder="e.g. Home token payment to Square Feet Group")
             st.markdown("#### Supporting Documents")
             st.caption("Upload one or more receipts / statements / bills.")
             uploaded_files = st.file_uploader("Choose files", accept_multiple_files=True, type=['pdf', 'jpg', 'jpeg', 'png'])
-            submitted = st.form_submit_button("🚀 Submit Transaction", use_container_width=True)
+            submitted = st.button("🚀 Submit Transaction", use_container_width=True)
+            # submitted = st.form_submit_button("🚀 Submit Transaction", use_container_width=True)
 
         if submitted:
             if not API_URL:

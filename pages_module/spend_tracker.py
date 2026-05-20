@@ -138,20 +138,15 @@ def render():
             col1, col2 = st.columns(2)
             with col1:
                 txn_id = st.text_input("Transaction ID *", placeholder="e.g. T2605161611411488265779")
-                txn_date = st.date_input("Transaction Date *", value=date.today())
-                amount = st.number_input("Amount (₹) *", min_value=0.0, step=100.0)
+                category = st.selectbox("Category *", list(SPEND_CATEGORIES.keys()))
+                amount = st.number_input("Amount (₹) *", min_value=0)
             with col2:
-                category = st.selectbox("Category *", SPEND_CATEGORIES)
+                txn_date = st.date_input("Transaction Date *", value=date.today())
+                sub_category = st.selectbox("Sub Category *", SPEND_CATEGORIES[category])
                 comments = st.text_area("Comments (optional)", placeholder="e.g. Home token payment to Square Feet Group")
-
             st.markdown("#### Supporting Documents")
             st.caption("Upload one or more receipts / statements / bills.")
-            uploaded_files = st.file_uploader(
-                "Choose files",
-                accept_multiple_files=True,
-                type=['pdf', 'jpg', 'jpeg', 'png']
-            )
-
+            uploaded_files = st.file_uploader("Choose files", accept_multiple_files=True, type=['pdf', 'jpg', 'jpeg', 'png'])
             submitted = st.form_submit_button("🚀 Submit Transaction", use_container_width=True)
 
         if submitted:
@@ -164,36 +159,20 @@ def render():
             else:
                 txn_date_str = txn_date.strftime('%Y%m%d')
                 amount_str = str(int(amount)) if amount == int(amount) else str(amount)
-
                 progress = st.progress(0, text="Submitting...")
                 errors = []
-
                 for i, file in enumerate(uploaded_files):
                     doc_index = i + 1
                     file_ext = file.name.rsplit('.', 1)[-1].lower()
                     content_type = get_content_type(file.name)
-
                     try:
-                        progress.progress(
-                            int((i / len(uploaded_files)) * 50),
-                            text=f"Registering document {doc_index}..."
-                        )
-                        result = call_metadata_api(
-                            txn_id, txn_date_str, amount_str,
-                            category, doc_index, file_ext, content_type, comments
-                        )
-
-                        progress.progress(
-                            int((i / len(uploaded_files)) * 50) + 50,
-                            text=f"Uploading document {doc_index} to S3..."
-                        )
+                        progress.progress(int((i / len(uploaded_files)) * 50), text=f"Registering document {doc_index}...")
+                        result = call_metadata_api(txn_id, txn_date_str, amount_str, category, sub_category, doc_index, file_ext, content_type, comments)
+                        progress.progress(int((i / len(uploaded_files)) * 50) + 50, text=f"Uploading document {doc_index} to S3...")
                         upload_to_presigned_url(result['upload_url'], file.read(), content_type)
-
                     except Exception as e:
                         errors.append(f"Doc {doc_index} ({file.name}): {e}")
-
                 progress.progress(100, text="Done!")
-
                 if errors:
                     st.warning("Some documents failed:")
                     for err in errors:

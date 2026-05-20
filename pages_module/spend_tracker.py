@@ -43,12 +43,13 @@ def load_transactions():
         return pd.DataFrame()
 
 # ── Upload helpers ────────────────────────────────────────────────────────────
-def call_metadata_api(txn_id, txn_date, amount, category, doc_index, file_ext, content_type, comments):
+def call_metadata_api(txn_id, txn_date, amount, category, sub_category, doc_index, file_ext, content_type, comments):
     payload = {
         "transaction_id": txn_id,
         "txn_date": txn_date,
         "amount": str(amount),
         "category": category,
+        "sub_category": sub_category,
         "document_id": str(doc_index),
         "file_extension": file_ext,
         "content_type": content_type,

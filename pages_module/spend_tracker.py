@@ -138,7 +138,6 @@ def render():
         st.markdown("### New Transaction")
         txn_container = st.container(border=True)
         with txn_container:
-            # These rerender dynamically
             col1, col2 = st.columns(2)
                 category = st.selectbox("Category *", list(SPEND_CATEGORIES.keys()), key="category")
                 sub_category = st.selectbox("Sub Category *", SPEND_CATEGORIES[category], key=f"subcategory_{category}")

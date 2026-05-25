@@ -9,4 +9,11 @@ def emi(principal,rate_of_interest, tenure):
 def render():
     st.title("💸 Loan Tracker by Tanmay")
     
-    df = pd.DataFrame()
+    emi_no = []
+    for i in range(30):
+        emi_no.append(i+1)
+    
+    df = pd.DataFrame({
+        "Month": emi_no
+    })
+    st.dataframe(df)

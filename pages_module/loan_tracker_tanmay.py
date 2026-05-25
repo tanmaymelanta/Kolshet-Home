@@ -10,10 +10,10 @@ def render():
     st.title("💸 Loan Tracker by Tanmay")
     
     emi_no = []
-    for i in range(30):
+    for i in range(360):
         emi_no.append(i+1)
     
     df = pd.DataFrame({
         "Month": emi_no
     })
-    st.dataframe(df)
+    st.dataframe(df, hide_index=True)

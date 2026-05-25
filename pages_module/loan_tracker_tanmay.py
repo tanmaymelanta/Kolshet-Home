@@ -9,7 +9,7 @@ def emi(principal,rate_of_interest, tenure):
 def render():
     st.title("💸 Loan Tracker by Tanmay")
     
-    emi_no = []
+    month_no, emi_amount = []*2
     for i in range(360):
         month_no.append(i+1)
         emi_amount.append(emi(principal= 5800000,rate_of_interest= 7.65, tenure= 360-i+1))

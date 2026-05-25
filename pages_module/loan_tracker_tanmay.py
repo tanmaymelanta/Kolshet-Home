@@ -6,7 +6,7 @@ def emi(principal,rate_of_interest, tenure):
     st.write(rate_of_interest)
     st.write(tenure)
     monthly_roi = rate_of_interest / 12 / 100
-    emi = (principal * monthly_roi * (1 + monthly_roi) * tenure) / ((1 + monthly_roi) * tenure - 1)
+    emi = (principal * monthly_roi * (1 + monthly_roi) ** tenure) / ((1 + monthly_roi) ** tenure - 1)
     st.write(f"(1+r) = {(1 + monthly_roi)}")
     st.write(f"(1+r)n = {(1 + monthly_roi)*tenure}")
     st.write(f"num= {(principal * monthly_roi * (1 + monthly_roi) * tenure)}")

@@ -12,7 +12,7 @@ def render():
     month_no, emi_amount = [], []
     for i in range(360):
         month_no.append(i+1)
-        emi_amount.append(emi(principal= 5800000,rate_of_interest= 7.65, tenure= 360-i+1))
+        emi_amount.append(emi(principal= 5800000,rate_of_interest= 7.65, tenure= 360))
     
     df = pd.DataFrame({
         "Month": month_no,

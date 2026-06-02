@@ -63,7 +63,7 @@ def render():
                 c1, c2, c3 = st.columns([2, 3, 2])
                 c1.write("**Date**")
                 c1.write(e["event_date"])
-                c2.write("**Remarks**")
+                c2.write("****")
                 c2.write(e["remarks"])
                 c3.write("**Amount Paid**")
                 c3.write(f'**₹{e["amount"]}**')

@@ -57,7 +57,6 @@ def render():
     if not events:
         st.info("No events found.")
     else:
-        st.divider()
         for e in events:
             with st.container(border=True):
                 c1, c2, c3 = st.columns([2, 3, 2])

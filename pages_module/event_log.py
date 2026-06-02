@@ -7,7 +7,7 @@ from aws_helpers import get_dynamodb_resource
 # ----------------------------
 # DynamoDB Config
 # ----------------------------
-TABLE_NAME = "home_event"
+TABLE_NAME = "home_events"
 
 def get_table():
     db = get_dynamodb_resource()

@@ -39,7 +39,7 @@ def render():
                 st.success("Event saved successfully.")
             except Exception as e:
                 st.error(f"Could not save event: {e}")
-
+    
     # ----------------------------
     # Load Events
     # ----------------------------
@@ -53,11 +53,11 @@ def render():
     except Exception as e:
         st.error(f"Could not load events: {e}")
         return
-
+    
     if not events:
         st.info("No events found.")
     else:
-                total_paid = sum(
+        total_paid = sum(
             float(e.get("amount", 0))
             for e in events
             if e.get("status") == "COMPLETED"

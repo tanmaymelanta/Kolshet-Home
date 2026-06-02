@@ -57,14 +57,42 @@ def render():
     if not events:
         st.info("No events found.")
     else:
+                total_paid = sum(
+            float(e.get("amount", 0))
+            for e in events
+            if e.get("status") == "COMPLETED"
+        )
+        st.metric(
+            "Total Amount Recorded",
+            f"₹ {total_paid:,.0f}"
+        )
         st.divider()
-        c1, c2, c3 = st.columns([2, 3, 2])
         for e in events:
             with st.container(border=True):
-                c1.write("**Date**")
-                c1.write(e["event_date"])
-                c2.write("**Remarks**")
-                c2.write(e["remarks"])
-                c3.write("**Amount Paid**")
-                c3.write(f'**₹{e["amount"]}**')
-                # c3.write(f"**₹ {float(e.get('amount', 0)):,.0f}**")
+                c1, c2, c3 = st.columns([2, 3, 2])
+                with c1:
+                    st.write("**Date**")
+                    st.write(e["event_date"])
+                with c2:
+                    st.write(f"**{e.get('event_name', '')}**")
+                    st.caption(e.get("event_type", ""))
+                    if e.get("remarks"):
+                        st.write(e["remarks"])
+                with c3:
+                    st.write(f"**₹ {float(e.get('amount', 0)):,.0f}**")
+                    st.write(e.get("status", ""))
+                    if e.get("party_name"):
+                        st.caption(e["party_name"])
+
+        
+        # st.divider()
+        # c1, c2, c3 = st.columns([2, 3, 2])
+        # for e in events:
+        #     with st.container(border=True):
+        #         c1.write("**Date**")
+        #         c1.write(e["event_date"])
+        #         c2.write("**Remarks**")
+        #         c2.write(e["remarks"])
+        #         c3.write("**Amount Paid**")
+        #         c3.write(f'**₹{e["amount"]}**')
+        #         # c3.write(f"**₹ {float(e.get('amount', 0)):,.0f}**")

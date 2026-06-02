@@ -19,7 +19,7 @@ page = st.sidebar.radio(
         "💸 Spend Tracker",
         "📊 Loan Tracker", 
         "📁 Document Hub",
-        "Loan Tracker Tanmay",
+        "🏠 Home Purchase Event Log",
     ],
     label_visibility="collapsed"
 )
@@ -33,6 +33,6 @@ elif page == "📊 Loan Tracker":
 elif page == "📁 Document Hub":
     from pages_module.document_hub import render
     render()
-elif page == "Loan Tracker Tanmay":
-    from pages_module.loan_tracker_tanmay import render
+elif page == "🏠 Home Purchase Event Log":
+    from pages_module.event_log import render
     render()

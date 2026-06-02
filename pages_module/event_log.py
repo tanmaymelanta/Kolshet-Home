@@ -61,9 +61,6 @@ def render():
         for e in events:
             with st.container(border=True):
                 c1, c2, c3 = st.columns([2, 3, 2])
-                c1.write("**Date**")
                 c1.write(e["event_date"])
-                c2.write("****")
                 c2.write(e["remarks"])
-                c3.write("****")
                 c3.write(f'**₹{e["amount"]}**')

@@ -57,15 +57,6 @@ def render():
     if not events:
         st.info("No events found.")
     else:
-        total_paid = sum(
-            float(e.get("amount", 0))
-            for e in events
-            if e.get("status") == "COMPLETED"
-        )
-        st.metric(
-            "Total Amount Recorded",
-            f"₹ {total_paid:,.0f}"
-        )
         st.divider()
         for e in events:
             with st.container(border=True):

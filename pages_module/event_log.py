@@ -65,5 +65,5 @@ def render():
                 c1.write(e["event_date"])
                 c2.write("****")
                 c2.write(e["remarks"])
-                c3.write("**Amount Paid**")
+                c3.write("****")
                 c3.write(f'**₹{e["amount"]}**')

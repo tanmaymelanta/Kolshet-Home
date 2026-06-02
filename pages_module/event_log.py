@@ -25,53 +25,9 @@ def render():
     # ----------------------------
     with st.expander("➕ Add New Event", expanded=True):
         col1, col2 = st.columns(2)
-        with col1:
-            event_date = st.date_input(
-                "Event Date",
-                value=datetime.today()
-            )
-            event_type = st.selectbox(
-                "Event Type",
-                [
-                    "TOKEN_PAYMENT",
-                    "BOOKING_AMOUNT",
-                    "LOGIN_CHARGES",
-                    "LOAN_APPLICATION",
-                    "SANCTION_LETTER",
-                    "REGISTRATION",
-                    "OCR_PAYMENT",
-                    "FIRST_DISBURSEMENT",
-                    "DEMAND_LETTER",
-                    "EMI_START",
-                    "PREPAYMENT",
-                    "FORECLOSURE",
-                    "POSSESSION",
-                    "REFUND",
-                    "OTHER"
-                ]
-            )
-            event_name = st.text_input(
-                "Event Name",
-                placeholder="Token Amount Paid"
-            )
-        with col2:
-            amount = st.number_input(
-                "Amount (₹)",
-                min_value=0.0,
-                step=1000.0
-            )
-            party_name = st.text_input(
-                "Party Name",
-                placeholder="L&T Finance / SBI / Builder"
-            )
-            status = st.selectbox(
-                "Status",
-                ["COMPLETED", "PLANNED", "PENDING", "CANCELLED"]
-            )
-        remarks = st.text_area(
-            "Remarks",
-            placeholder="Additional details..."
-        )
+        event_date = col1.date_input("Event Date", value=datetime.today())
+        amount = col2.number_input("Amount (₹)", step=0)
+        remarks = st.text_area("Remarks", placeholder="Additional details...")
         if st.button("Save Event"):
             try:
                 table = get_table()
@@ -79,13 +35,8 @@ def render():
                 item = {
                     "event_id": event_id,
                     "event_date": str(event_date),
-                    "event_type": event_type,
-                    "event_name": event_name,
-                    "status": status,
                     "amount": Decimal(str(amount)),
-                    "party_name": party_name,
                     "remarks": remarks,
-                    "created_at": datetime.utcnow().isoformat()
                 }
                 table.put_item(Item=item)
                 st.success("Event saved successfully.")
@@ -110,15 +61,6 @@ def render():
     if not events:
         st.info("No events found.")
     else:
-        total_paid = sum(
-            float(e.get("amount", 0))
-            for e in events
-            if e.get("status") == "COMPLETED"
-        )
-        st.metric(
-            "Total Amount Recorded",
-            f"₹ {total_paid:,.0f}"
-        )
         st.divider()
         for e in events:
             with st.container(border=True):

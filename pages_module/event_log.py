@@ -58,11 +58,13 @@ def render():
         st.info("No events found.")
     else:
         st.divider()
+        c1, c2, c3 = st.columns([2, 3, 2])
+        c1.write("**Date**")
+        c2.write("**Remarks**")
+        c3.write("**Amount Paid (if any)**")
         for e in events:
             with st.container(border=True):
-                c1, c2, c3 = st.columns([2, 3, 2])
-                c1.write("**Date**")
                 c1.write(e["event_date"])
-                if e.get("remarks"):
-                    c2.write(e["remarks"])
-                c3.write(f"**₹ {float(e.get('amount', 0)):,.0f}**")
+                c2.write(e["remarks"])
+                c3.write(e["amount"])
+                # c3.write(f"**₹ {float(e.get('amount', 0)):,.0f}**")

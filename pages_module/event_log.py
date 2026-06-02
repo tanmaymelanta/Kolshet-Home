@@ -8,18 +8,15 @@ from aws_helpers import get_dynamodb_resource
 # DynamoDB Config
 # ----------------------------
 TABLE_NAME = "home_events"
-
 def get_table():
     db = get_dynamodb_resource()
     return db.Table(TABLE_NAME)
-
 
 # ----------------------------
 # Render
 # ----------------------------
 def render():
     st.title("🏠 Home Purchase Event Log")
-
     # ----------------------------
     # Event Entry Form
     # ----------------------------
@@ -48,7 +45,6 @@ def render():
     # ----------------------------
     st.divider()
     st.subheader("📅 Event Timeline")
-
     try:
         table = get_table()
         response = table.scan()
@@ -65,16 +61,8 @@ def render():
         for e in events:
             with st.container(border=True):
                 c1, c2, c3 = st.columns([2, 3, 2])
-                with c1:
-                    st.write("**Date**")
-                    st.write(e["event_date"])
-                with c2:
-                    st.write(f"**{e.get('event_name', '')}**")
-                    st.caption(e.get("event_type", ""))
-                    if e.get("remarks"):
-                        st.write(e["remarks"])
-                with c3:
-                    st.write(f"**₹ {float(e.get('amount', 0)):,.0f}**")
-                    st.write(e.get("status", ""))
-                    if e.get("party_name"):
-                        st.caption(e["party_name"])
+                c1.write("**Date**")
+                c1.write(e["event_date"])
+                if e.get("remarks"):
+                    c2.write(e["remarks"])
+                c3.write(f"**₹ {float(e.get('amount', 0)):,.0f}**")

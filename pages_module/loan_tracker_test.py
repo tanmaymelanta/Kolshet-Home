@@ -7,6 +7,11 @@ def render():
   df = pd.read_csv(url)
   filtered_df = df[df["Status"] == "Paid"].reset_index(drop=True)
 
+  st.write(df.dtypes)
+  st.write(df["Status"].unique())
+  filtered_df = df[df["Status"].astype(str).str.strip() == "Paid"]
+  st.write(filtered_df.head())
+
   current_balance = filtered_df["Closing Balance"].iloc[-1]
   total_interest_paid = filtered_df["Interest Paid"].sum()
   total_principal_paid = filtered_df["Principal Paid"].sum()

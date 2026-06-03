@@ -22,7 +22,7 @@ def render():
   col3.metric("Interest Paid", f"₹{total_interest_paid:,.0f}")
 
   loan_amount = filtered_df["Loan Added"].sum()
-  paid = filtered_df["Principal Paid"].sum() + filtered_df["Extra Principal Paid"].sum()
+  paid = filtered_df["Principal Paid"].fillna(0).sum() + filtered_df["Extra Principal Paid"].fillna(0).sum()
   progress = paid / loan_amount
   st.progress(progress)
   st.write(f"{progress:.1%} of principal repaid")

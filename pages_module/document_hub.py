@@ -10,7 +10,7 @@ def list_documents(category=None):
     s3 = get_s3_client()
     prefix = DOCUMENT_PREFIX
     if category:
-        prefix = f"{DOCUMENT_PREFIX}{category}/"
+        prefix = f"{DOCUMENT_PREFIX}/{category}"
 
     try:
         paginator = s3.get_paginator('list_objects_v2')

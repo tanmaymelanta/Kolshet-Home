@@ -21,7 +21,7 @@ BUCKET_NAME = "kolshet-home"
 TRANSACTIONS_TABLE = "expense_transactions"
 LOAN_CONFIG_TABLE = "loan_config"
 
-DOCUMENT_CATEGORIES = ["Property Money Transactions", "Banking Loan Documents", "Property Agreement & Registration Documets", "Tax Files"]
+DOCUMENT_CATEGORIES = ["Property Money Transactions", "Banking Loan Documents", "Property Agreement & Registration", "Tax Files"]
 DOCUMENT_PREFIX = "Important-Documents/"
 
 SPEND_CATEGORIES = {

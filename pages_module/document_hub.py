@@ -124,7 +124,7 @@ def render():
             uploaded_file = st.file_uploader("Choose file *", type=['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'])
             submitted = st.form_submit_button("📤 Upload", use_container_width=True)
         if submitted:
-            if not uploaded_file or custom_name:
+            if not uploaded_file or not custom_name:
                 st.error("Please give filename & select a file to upload.")
             else:
                 filename = custom_name.strip() if custom_name.strip() else uploaded_file.name

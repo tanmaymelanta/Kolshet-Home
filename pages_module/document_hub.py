@@ -20,12 +20,7 @@ def list_documents(category=None):
                 key = obj['Key']
                 parts = key.replace(DOCUMENT_PREFIX, '').split('/')
                 if len(parts) == 2 and parts[1]:
-                    docs.append({
-                        'key': key,
-                        'category': parts[0],
-                        'filename': parts[1],
-                        'size_kb': round(obj['Size'] / 1024, 1)
-                    })
+                    docs.append({'key': key, 'category': parts[0], 'filename': parts[1], 'size_kb': round(obj['Size'] / 1024, 1)})
         return docs
     except Exception as e:
         st.error(f"Could not list documents: {e}")
@@ -92,7 +87,7 @@ def render():
                 st.markdown(f"#### 📂 {category} ({len(group_list)} file{'s' if len(group_list) > 1 else ''})")
 
                 for doc in group_list:
-                    col1, col2, col3, col4 = st.columns([4, 1, 1, 1])
+                    col1, col2, col3 = st.columns([4, 1, 1])
                     with col1:
                         ext = doc['filename'].rsplit('.', 1)[-1].upper()
                         icon = {'PDF': '📄', 'JPG': '🖼️', 'JPEG': '🖼️', 'PNG': '🖼️', 'DOC': '📝', 'DOCX': '📝'}.get(ext, '📎')

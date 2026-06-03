@@ -22,7 +22,7 @@ TRANSACTIONS_TABLE = "expense_transactions"
 LOAN_CONFIG_TABLE = "loan_config"
 
 DOCUMENT_CATEGORIES = ["Property Money Transactions", "Banking Loan Documents", "Property Agreement & Registration Documets", "Tax Files"]
-DOCUMENT_PREFIX = "important-documents/"
+DOCUMENT_PREFIX = "Important-Documents/"
 
 SPEND_CATEGORIES = {
     "Property Acquisition": ["Booking Amount", "Down Payment", "Registration", "Stamp Duty", "Brokerage", "Legal Fees"], 

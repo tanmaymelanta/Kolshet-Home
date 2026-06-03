@@ -127,7 +127,6 @@ def render():
             if not uploaded_file or custom_name:
                 st.error("Please give filename & select a file to upload.")
             else:
-                st.write(custom_name)
                 filename = custom_name.strip() if custom_name.strip() else uploaded_file.name
                 if custom_name.strip() and '.' not in custom_name:
                     ext = uploaded_file.name.rsplit('.', 1)[-1]
@@ -137,5 +136,5 @@ def render():
                 with st.spinner(f"Uploading {filename}..."):
                     success = upload_document(category, filename, file_bytes, content_type)
                 if success:
-                    st.success(f"✅ **{filename}** uploaded to **{category}** successfully!")
+                    st.success(f"✅ **{custom_name}** uploaded to **{category}** successfully!")
                     st.info("Switch to 'My Documents' tab to view it.")

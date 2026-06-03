@@ -95,7 +95,7 @@ def render():
     # ── Upload tab ────────────────────────────────────────────────────────────
     with tab_upload:
         st.markdown("### Upload a Document")
-    #     with st.form("upload_doc_form", clear_on_submit=True):
+        with st.form("upload_doc_form", clear_on_submit=True):
     #         category = st.selectbox("Category *", DOCUMENT_CATEGORIES)
     #         custom_name = st.text_input("Save as (optional)", placeholder="Leave blank to use original filename")
     #         uploaded_file = st.file_uploader("Choose file *", type=['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'])

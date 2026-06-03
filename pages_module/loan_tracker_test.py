@@ -8,9 +8,8 @@ def render():
   filtered_df = df[df["Status"] == "Paid"].reset_index(drop=True)
   
   money_cols = ["Opening Balance", "Interest Paid", "Principal Paid", "Closing Balance", "Loan Added", "EMI Paid"]
-  st.write(filtered_df["Closing Balance"].head(10).tolist())
   for col in money_cols:
-    filtered_df[col] = (filtered_df[col].astype(str).str.replace(",", "", regex=False).replace("", None).replace("₹",""))
+    filtered_df[col] = (filtered_df[col].astype(str).str.replace("₹", "", regex=False).str.replace(",", "", regex=False).str.strip())
     filtered_df[col] = pd.to_numeric(filtered_df[col], errors="coerce")
 
   current_balance = filtered_df["Closing Balance"].iloc[-1]

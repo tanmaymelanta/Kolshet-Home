@@ -25,7 +25,7 @@ def render():
   paid = filtered_df["Principal Paid"].sum() + filtered_df["Extra Principal Paid"].sum()
   progress = paid / loan_amount
   st.progress(progress)
-  st.write(f"{progress:.1%} of principal repaid",use_container_width=True)
+  st.write(f"{progress:.1%} of principal repaid")
 
   st.divider()
   fig = px.line(filtered_df, x="Month-Year", y="Closing Balance", markers=True, title="Outstanding Balance Over Time")

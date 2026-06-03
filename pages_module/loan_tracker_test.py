@@ -8,6 +8,7 @@ def render():
   filtered_df = df[df["Status"] == "Paid"].reset_index(drop=True)
   
   money_cols = ["Opening Balance", "Interest Paid", "Principal Paid", "Closing Balance", "Loan Added", "EMI Paid"]
+  st.write(filtered_df["Closing Balance"].head(10).tolist())
   for col in money_cols:
     filtered_df[col] = (filtered_df[col].astype(str).str.replace(",", "", regex=False).replace("", None).replace("₹",""))
     filtered_df[col] = pd.to_numeric(filtered_df[col], errors="coerce")
@@ -21,10 +22,7 @@ def render():
   col3.metric("Interest Paid", f"₹{total_interest_paid:,.0f}")
 
   st.divider()
-  st.write(filtered_df["Closing Balance"].dtype)
-  st.write(filtered_df["Closing Balance"].head())
-  st.line_chart(filtered_df, x="Month-Year", y="Closing Balance")
-  # st.line_chart(filtered_df.set_index("Month-Year")["Closing Balance"])
+  st.line_chart(filtered_df.set_index("Month-Year")["Closing Balance"])
 
   st.divider()
   st.dataframe(df)

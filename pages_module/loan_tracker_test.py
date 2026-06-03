@@ -8,7 +8,7 @@ def render():
   df = pd.read_csv(url)
   filtered_df = df[df["Status"] == "Paid"].reset_index(drop=True)
   
-  money_cols = ["Opening Balance", "Interest Paid", "Principal Paid", "Closing Balance", "Loan Added", "EMI Paid"]
+  money_cols = ["Opening Balance", "Interest Paid", "Principal Paid", "Closing Balance", "Loan Added", "Extra Principal Paid", "EMI Paid"]
   for col in money_cols:
     filtered_df[col] = (filtered_df[col].astype(str).str.replace("₹", "", regex=False).str.replace(",", "", regex=False).str.strip())
     filtered_df[col] = pd.to_numeric(filtered_df[col], errors="coerce")

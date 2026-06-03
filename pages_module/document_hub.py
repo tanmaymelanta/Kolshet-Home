@@ -35,7 +35,7 @@ def list_documents(category=None):
 
 def upload_document(category, filename, file_bytes, content_type):
     s3 = get_s3_client()
-    key = f"{DOCUMENT_PREFIX}/{category}/{filename}"
+    key = f"{DOCUMENT_PREFIX}{category}/{filename}"
     try:
         s3.put_object(
             Bucket=BUCKET_NAME,

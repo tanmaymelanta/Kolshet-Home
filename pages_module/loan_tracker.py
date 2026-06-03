@@ -2,11 +2,12 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 
+url = "https://docs.google.com/spreadsheets/d/1Sh5-kymrGcPSm8D5e1B1jUB40q0Mel9crvkrBiDFKmc/export?format=csv"
+df = pd.read_csv(url)
+filtered_df = df[df["Status"] == "Paid"].reset_index(drop=True)
+
 def render():
-  st.write("loan tracket testing")
-  url = "https://docs.google.com/spreadsheets/d/1Sh5-kymrGcPSm8D5e1B1jUB40q0Mel9crvkrBiDFKmc/export?format=csv"
-  df = pd.read_csv(url)
-  filtered_df = df[df["Status"] == "Paid"].reset_index(drop=True)
+  st.title("📊 Loan Tracker")
   
   money_cols = ["Opening Balance", "Interest Paid", "Principal Paid", "Closing Balance", "Loan Added", "Extra Principal Paid", "EMI Paid"]
   for col in money_cols:

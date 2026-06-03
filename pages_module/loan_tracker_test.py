@@ -21,7 +21,7 @@ def render():
   col3.metric("Interest Paid", f"₹{total_interest_paid:,.0f}")
 
   st.divider()
-  st.line_chart(filtered_df.set_index("Month")["Closing Balance"])
+  st.line_chart(filtered_df.set_index("Month-Year")["Closing Balance"])
 
   st.divider()
   st.dataframe(df)

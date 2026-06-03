@@ -15,10 +15,13 @@ def render():
   current_balance = filtered_df["Closing Balance"].iloc[-1]
   total_interest_paid = filtered_df["Interest Paid"].sum()
   total_principal_paid = filtered_df["Principal Paid"].sum()
-
   col1, col2, col3 = st.columns(3)
   col1.metric("Outstanding Balance", f"₹{current_balance:,.0f}")
   col2.metric("Principal Paid", f"₹{total_principal_paid:,.0f}")
   col3.metric("Interest Paid", f"₹{total_interest_paid:,.0f}")
-  
+
+  st.divider()
+  st.line_chart(filtered_df.set_index("Month")["Closing Balance"])
+
+  st.divider()
   st.dataframe(df)

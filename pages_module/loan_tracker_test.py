@@ -6,11 +6,11 @@ def render():
   url = "https://docs.google.com/spreadsheets/d/1Sh5-kymrGcPSm8D5e1B1jUB40q0Mel9crvkrBiDFKmc/export?format=csv"
   df = pd.read_csv(url)
   filtered_df = df[df["Status"] == "Paid"].reset_index(drop=True)
-
-  st.write(df.dtypes)
-  st.write(df["Status"].unique())
-  filtered_df = df[df["Status"].astype(str).str.strip() == "Paid"]
-  st.write(filtered_df.head())
+  
+  money_cols = ["Opening Balance", "Interest Paid", "Principal Paid", "Closing Balance", "Loan Added", "EMI Paid"]
+  for col in money_cols:
+    filtered_df[col] = (filtered_df[col].astype(str).str.replace(",", "", regex=False).replace("", None))
+    filtered_df[col] = pd.to_numeric(filtered_df[col], errors="coerce")
 
   current_balance = filtered_df["Closing Balance"].iloc[-1]
   total_interest_paid = filtered_df["Interest Paid"].sum()

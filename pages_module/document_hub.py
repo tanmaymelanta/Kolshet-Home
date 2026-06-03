@@ -100,21 +100,21 @@ def render():
             custom_name = st.text_input("Save as (optional)", placeholder="Leave blank to use original filename")
             uploaded_file = st.file_uploader("Choose file *", type=['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'])
             submitted = st.form_submit_button("📤 Upload", use_container_width=True)
-    #     if submitted:
-    #         if not uploaded_file:
-    #             st.error("Please select a file to upload.")
-    #         else:
-    #             filename = custom_name.strip() if custom_name.strip() else uploaded_file.name
-    #             if custom_name.strip() and '.' not in custom_name:
-    #                 ext = uploaded_file.name.rsplit('.', 1)[-1]
-    #                 filename = f"{filename}.{ext}"
-    #             content_type = get_content_type(filename)
-    #             file_bytes = uploaded_file.read()
-    #             with st.spinner(f"Uploading {filename}..."):
-    #                 success = upload_document(category, filename, file_bytes, content_type)
-    #             if success:
-    #                 st.success(f"✅ **{filename}** uploaded to **{category}** successfully!")
-    #                 st.info("Switch to 'My Documents' tab to view it.")
+        if submitted:
+            if not uploaded_file:
+                st.error("Please select a file to upload.")
+            else:
+                filename = custom_name.strip() if custom_name.strip() else uploaded_file.name
+                if custom_name.strip() and '.' not in custom_name:
+                    ext = uploaded_file.name.rsplit('.', 1)[-1]
+                    filename = f"{filename}.{ext}"
+                content_type = get_content_type(filename)
+                file_bytes = uploaded_file.read()
+                with st.spinner(f"Uploading {filename}..."):
+                    success = upload_document(category, filename, file_bytes, content_type)
+                if success:
+                    st.success(f"✅ **{filename}** uploaded to **{category}** successfully!")
+                    st.info("Switch to 'My Documents' tab to view it.")
 
     # ── View tab ──────────────────────────────────────────────────────────────
     with tab_view:

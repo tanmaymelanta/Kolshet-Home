@@ -179,7 +179,6 @@ def render():
 
         with st.form("upload_doc_form", clear_on_submit=True):
             category = st.selectbox("Category *", DOCUMENT_CATEGORIES)
-            st.write(f"{DOCUMENT_PREFIX}/{category}/")
             custom_name = st.text_input(
                 "Save as (optional)",
                 placeholder="Leave blank to use original filename"

@@ -9,7 +9,7 @@ def render():
   
   money_cols = ["Opening Balance", "Interest Paid", "Principal Paid", "Closing Balance", "Loan Added", "EMI Paid"]
   for col in money_cols:
-    filtered_df[col] = (filtered_df[col].astype(str).str.replace(",", "", regex=False).replace("", None))
+    filtered_df[col] = (filtered_df[col].astype(str).str.replace(",", "", regex=False).replace("", None).replace("₹",""))
     filtered_df[col] = pd.to_numeric(filtered_df[col], errors="coerce")
 
   current_balance = filtered_df["Closing Balance"].iloc[-1]

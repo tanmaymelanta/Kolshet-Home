@@ -178,6 +178,7 @@ def render():
         st.markdown("### Upload a Document")
 
         with st.form("upload_doc_form", clear_on_submit=True):
+            st.write(f"{DOCUMENT_PREFIX}/{category}/")
             category = st.selectbox("Category *", DOCUMENT_CATEGORIES)
             custom_name = st.text_input(
                 "Save as (optional)",

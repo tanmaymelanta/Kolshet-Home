@@ -17,7 +17,7 @@ def get_dynamodb_resource():
         aws_secret_access_key=st.secrets["AWS_SECRET_ACCESS_KEY"]
     )
 
-BUCKET_NAME = "kolshet-home"
+BUCKET_NAME = "kolshet-home-project"
 TRANSACTIONS_TABLE = "expense_transactions"
 LOAN_CONFIG_TABLE = "loan_config"
 

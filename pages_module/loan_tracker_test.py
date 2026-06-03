@@ -5,7 +5,7 @@ def render():
   st.write("loan tracket testing")
   url = "https://docs.google.com/spreadsheets/d/1Sh5-kymrGcPSm8D5e1B1jUB40q0Mel9crvkrBiDFKmc/export?format=csv"
   df = pd.read_csv(url)
-  filtered_df = df[df["Status"] == "Paid"].reset_index(drop=True)
+  filtered_df = df[df["Status"] == "Paid"].sort_values(by='Month-Year').reset_index(drop=True)
   
   money_cols = ["Opening Balance", "Interest Paid", "Principal Paid", "Closing Balance", "Loan Added", "EMI Paid"]
   for col in money_cols:
@@ -21,6 +21,7 @@ def render():
   col3.metric("Interest Paid", f"₹{total_interest_paid:,.0f}")
 
   st.divider()
+  
   st.line_chart(filtered_df, x='Month-Year', y='Closing Balance', )
 
   st.divider()

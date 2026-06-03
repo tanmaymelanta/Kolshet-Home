@@ -33,10 +33,9 @@ def list_documents(category=None):
         st.error(f"Could not list documents: {e}")
         return []
 
-
 def upload_document(category, filename, file_bytes, content_type):
     s3 = get_s3_client()
-    key = f"{DOCUMENT_PREFIX}{category}/{filename}"
+    key = f"{DOCUMENT_PREFIX}/{category}/{filename}"
     try:
         s3.put_object(
             Bucket=BUCKET_NAME,
@@ -48,7 +47,6 @@ def upload_document(category, filename, file_bytes, content_type):
     except Exception as e:
         st.error(f"Upload failed: {e}")
         return False
-
 
 def generate_download_url(key):
     s3 = get_s3_client()
@@ -189,7 +187,6 @@ def render():
                 "Choose file *",
                 type=['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx']
             )
-
             submitted = st.form_submit_button("📤 Upload", use_container_width=True)
 
         if submitted:
@@ -197,17 +194,13 @@ def render():
                 st.error("Please select a file to upload.")
             else:
                 filename = custom_name.strip() if custom_name.strip() else uploaded_file.name
-                # Ensure extension is preserved if custom name given without one
                 if custom_name.strip() and '.' not in custom_name:
                     ext = uploaded_file.name.rsplit('.', 1)[-1]
                     filename = f"{filename}.{ext}"
-
                 content_type = get_content_type(filename)
                 file_bytes = uploaded_file.read()
-
                 with st.spinner(f"Uploading {filename}..."):
                     success = upload_document(category, filename, file_bytes, content_type)
-
                 if success:
                     st.success(f"✅ **{filename}** uploaded to **{category}** successfully!")
                     st.info("Switch to 'My Documents' tab to view it.")

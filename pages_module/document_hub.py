@@ -127,6 +127,7 @@ def render():
             if not uploaded_file or custom_name:
                 st.error("Please give filename & select a file to upload.")
             else:
+                st.write(custom_name)
                 filename = custom_name.strip() if custom_name.strip() else uploaded_file.name
                 if custom_name.strip() and '.' not in custom_name:
                     ext = uploaded_file.name.rsplit('.', 1)[-1]

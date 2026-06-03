@@ -10,7 +10,7 @@ def list_documents(category=None):
     s3 = get_s3_client()
     prefix = DOCUMENT_PREFIX
     if category:
-        prefix = f"{DOCUMENT_PREFIX}/{category}"
+        prefix = f"{DOCUMENT_PREFIX}{category}"
 
     try:
         paginator = s3.get_paginator('list_objects_v2')
@@ -99,7 +99,7 @@ def render():
     #         category = st.selectbox("Category *", DOCUMENT_CATEGORIES)
     #         custom_name = st.text_input("Save as (optional)", placeholder="Leave blank to use original filename")
     #         uploaded_file = st.file_uploader("Choose file *", type=['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'])
-    #         submitted = st.form_submit_button("📤 Upload", use_container_width=True)
+            submitted = st.form_submit_button("📤 Upload", use_container_width=True)
     #     if submitted:
     #         if not uploaded_file:
     #             st.error("Please select a file to upload.")

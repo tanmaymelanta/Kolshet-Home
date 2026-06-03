@@ -120,12 +120,12 @@ def render():
         st.markdown("### Upload a Document")
         with st.form("upload_doc_form", clear_on_submit=True):
             category = st.selectbox("Category *", DOCUMENT_CATEGORIES)
-            custom_name = st.text_input("Save as (optional)", placeholder="Leave blank to use original filename")
+            custom_name = st.text_input("Save as *", placeholder="yyyy-mm-dd filename amount if any")
             uploaded_file = st.file_uploader("Choose file *", type=['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'])
             submitted = st.form_submit_button("📤 Upload", use_container_width=True)
         if submitted:
-            if not uploaded_file:
-                st.error("Please select a file to upload.")
+            if not uploaded_file or custom_name:
+                st.error("Please give filename & select a file to upload.")
             else:
                 filename = custom_name.strip() if custom_name.strip() else uploaded_file.name
                 if custom_name.strip() and '.' not in custom_name:

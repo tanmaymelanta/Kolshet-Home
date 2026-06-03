@@ -21,10 +21,20 @@ def render():
   col2.metric("Principal Paid", f"₹{total_principal_paid:,.0f}")
   col3.metric("Interest Paid", f"₹{total_interest_paid:,.0f}")
 
+  loan_amount = filtered_df["Loan Added"].sum()
+  paid = filtered_df["Principal"].sum()
+  progress = paid / loan_amount
+  st.progress(progress)
+  st.write(f"{progress:.1%} of principal repaid",use_container_width=True)
+
   st.divider()
   fig = px.line(filtered_df, x="Month-Year", y="Closing Balance", markers=True, title="Outstanding Balance Over Time")
   fig.update_layout(xaxis_title="Month", yaxis_title="Outstanding Balance (₹)",hovermode="x unified")
   st.plotly_chart(fig, use_container_width=True) 
+
+  st.divider()
+  fig = px.area(filtered_df, x="Month-Year", y=["Interest Paid", "Principal Paid"], title="EMI Composition")
+  st.plotly_chart(fig, use_container_width=True)
 
   st.divider()
   st.dataframe(df)

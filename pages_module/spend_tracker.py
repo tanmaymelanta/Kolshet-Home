@@ -153,6 +153,7 @@ def render():
             submitted = st.button("🚀 Submit Transaction", use_container_width=True)
 
         if submitted:
+            st.write(uploaded_files)
             if not API_URL:
                 st.error("API_GATEWAY_URL not set in Streamlit secrets.")
             elif not txn_id or amount <= 0:

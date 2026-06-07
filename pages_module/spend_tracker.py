@@ -126,7 +126,7 @@ def render():
             status_filter = st.multiselect("Filter by status", options=df['status'].unique().tolist(), default=df['status'].unique().tolist())
             filtered = df[df['status'].isin(status_filter)]
             status_colors = {'VALIDATED': '🟢', 'AMOUNT_MISMATCH': '🟡', 'OCR_FAILED': '🔴', 'PENDING': '⚪'}
-            display = filtered[['transaction_id', 'document_id', 'txn_date', 'category', 'sub_category', 'expected_amount', 'status', 'comments', 's3_path']].copy()
+            display = filtered[['transaction_id', 'transaction_date', 'category', 'sub_category', 'expected_amount', 'status', 'comments', 's3_path']].copy()
             display['status'] = display['status'].apply(lambda s: f"{status_colors.get(s, '')} {s}")
             display['s3_path'] = display['s3_path'].str.split('receipt-vault/').str[1]
             display['txn_date'] = display['txn_date'].apply(lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%d %b %Y') if len(str(d)) == 8 else d)

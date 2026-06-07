@@ -18,7 +18,7 @@ def get_dynamodb_resource():
     )
 
 BUCKET_NAME = "kolshet-home-project"
-TRANSACTIONS_TABLE = "expense_transactions"
+TRANSACTIONS_TABLE = "house_expenses"
 LOAN_CONFIG_TABLE = "loan_config"
 
 DOCUMENT_CATEGORIES = ["Property Money Transactions", "Banking Loan Documents", "Property Agreement & Registration", "Tax Files"]

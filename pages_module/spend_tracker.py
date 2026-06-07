@@ -149,11 +149,11 @@ def render():
                 comments = st.text_area("Comments (optional)", placeholder="e.g. Home token payment to Square Feet Group")
             st.markdown("#### Supporting Documents")
             st.caption("Upload one or more receipts / statements / bills.")
-            uploaded_files = st.file_uploader("Choose files", accept_multiple_files=True, type=['pdf', 'jpg', 'jpeg', 'png'])
+            uploaded_file = st.file_uploader("Choose files", accept_multiple_files=False, type=['pdf', 'jpg', 'jpeg', 'png'])
             submitted = st.button("🚀 Submit Transaction", use_container_width=True)
 
         if submitted:
-            st.write(uploaded_files)
+            st.write(uploaded_file)
             if not API_URL:
                 st.error("API_GATEWAY_URL not set in Streamlit secrets.")
             elif not txn_id or amount <= 0:
@@ -163,8 +163,8 @@ def render():
             else:
                 txn_date_str = txn_date.strftime('%Y%m%d')
                 amount_str = str(int(amount)) if amount == int(amount) else str(amount)
-                file_ext = uploaded_files[0].name.rsplit('.', 1)[-1].lower()
-                content_type = get_content_type(uploaded_files[0].name)
+                file_ext = uploaded_file.name.rsplit('.', 1)[-1].lower()
+                content_type = get_content_type(uploaded_file.name)
                 try:
                     result = call_metadata_api(txn_id, txn_date_str, amount_str, category, sub_category, file_ext, content_type, comments)
                     upload_to_presigned_url(result['upload_url'], uploaded_files[0].read(), content_type)

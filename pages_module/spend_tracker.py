@@ -162,8 +162,8 @@ def render():
             else:
                 txn_date_str = txn_date.strftime('%Y%m%d')
                 amount_str = str(int(amount)) if amount == int(amount) else str(amount)
-                file_ext = uploaded_files.name.rsplit('.', 1)[-1].lower()
-                content_type = get_content_type(uploaded_files.name)
+                file_ext = uploaded_files[0].name.rsplit('.', 1)[-1].lower()
+                content_type = get_content_type(uploaded_files[0].name)
                 try:
                     result = call_metadata_api(txn_id, txn_date_str, amount_str, category, sub_category, file_ext, content_type, comments)
                     upload_to_presigned_url(result['upload_url'], file.read(), content_type)

@@ -153,12 +153,11 @@ def render():
             submitted = st.button("🚀 Submit Transaction", use_container_width=True)
 
         if submitted:
-            st.write(uploaded_file)
             if not API_URL:
                 st.error("API_GATEWAY_URL not set in Streamlit secrets.")
             elif not txn_id or amount <= 0:
                 st.error("Transaction ID and Amount are required.")
-            elif not uploaded_files:
+            elif not uploaded_file:
                 st.error("Please upload invoice or transaction receipt.")
             else:
                 txn_date_str = txn_date.strftime('%Y%m%d')

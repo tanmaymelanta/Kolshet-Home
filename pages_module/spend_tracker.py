@@ -28,8 +28,7 @@ def load_transactions():
         for item in items:
             records.append({
                 'transaction_id': item.get('transaction_id', ''),
-                'document_id': item.get('document_id', ''),
-                'txn_date': item.get('txn_date', ''),
+                'transaction_date': item.get('transaction_date', ''),
                 'category': item.get('category', ''),
                 'sub_category': item.get('sub_category', ''),
                 'comments': item.get('comments', ''),
@@ -45,14 +44,13 @@ def load_transactions():
         return pd.DataFrame()
 
 # ── Upload helpers ────────────────────────────────────────────────────────────
-def call_metadata_api(txn_id, txn_date, amount, category, sub_category, doc_index, file_ext, content_type, comments):
+def call_metadata_api(txn_id, txn_date, amount, category, sub_category, file_ext, content_type, comments):
     payload = {
         "transaction_id": txn_id,
-        "txn_date": txn_date,
+        "transaction_date": txn_date,
         "amount": str(amount),
         "category": category,
         "sub_category": sub_category,
-        "document_id": str(doc_index),
         "file_extension": file_ext,
         "content_type": content_type,
         "comments": comments
@@ -92,8 +90,8 @@ def render():
         if not df.empty:
             valid_df = df[df['status'] == 'VALIDATED'].copy()
             invalid_df = df[df['status'] != 'VALIDATED'].copy()
-            transactions_df =df[['transaction_id', 'txn_date', 'category', 'comments', 'expected_amount']].drop_duplicates().copy()
-            transactions_df['transaction_date'] = transactions_df['txn_date'].apply(lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m-%d') if len(str(d)) == 8 else d[:7])
+            transactions_df =df[['transaction_id', 'transaction_date', 'category', 'comments', 'expected_amount']].drop_duplicates().copy()
+            transactions_df['transaction_date'] = transactions_df['transaction_date'].apply(lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m-%d') if len(str(d)) == 8 else d[:7])
     
             total_spend = transactions_df['expected_amount'].sum()
             num_txns = len(transactions_df['transaction_id'].unique())

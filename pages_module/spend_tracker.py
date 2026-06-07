@@ -142,7 +142,7 @@ def render():
         with txn_container:
             col1, col2 = st.columns(2)
             with col1:
-                txn_id = st.text_input("Transaction ID *", placeholder="e.g. T2605161611411488265779")
+                txn_id = st.text_input("Transaction ID *", placeholder="Enter UTR ID")
                 category = st.selectbox("Category *", list(SPEND_CATEGORIES.keys()), key="category")
                 amount = st.number_input("Amount (₹) *", min_value=0)
             with col2:
@@ -160,28 +160,16 @@ def render():
             elif not txn_id or amount <= 0:
                 st.error("Transaction ID and Amount are required.")
             elif not uploaded_files:
-                st.error("Please upload at least one supporting document.")
+                st.error("Please upload invoice or transaction receipt.")
             else:
                 txn_date_str = txn_date.strftime('%Y%m%d')
                 amount_str = str(int(amount)) if amount == int(amount) else str(amount)
-                progress = st.progress(0, text="Submitting...")
-                errors = []
-                for i, file in enumerate(uploaded_files):
-                    doc_index = i + 1
-                    file_ext = file.name.rsplit('.', 1)[-1].lower()
-                    content_type = get_content_type(file.name)
-                    try:
-                        progress.progress(int((i / len(uploaded_files)) * 50), text=f"Registering document {doc_index}...")
-                        result = call_metadata_api(txn_id, txn_date_str, amount_str, category, sub_category, doc_index, file_ext, content_type, comments)
-                        progress.progress(int((i / len(uploaded_files)) * 50) + 50, text=f"Uploading document {doc_index} to S3...")
-                        upload_to_presigned_url(result['upload_url'], file.read(), content_type)
-                    except Exception as e:
-                        errors.append(f"Doc {doc_index} ({file.name}): {e}")
-                progress.progress(100, text="Done!")
-                if errors:
-                    st.warning("Some documents failed:")
-                    for err in errors:
-                        st.error(err)
-                else:
+                file_ext = file.name.rsplit('.', 1)[-1].lower()
+                content_type = get_content_type(file.name)
+                try:
+                    result = call_metadata_api(txn_id, txn_date_str, amount_str, category, sub_category, file_ext, content_type, comments)
+                    upload_to_presigned_url(result['upload_url'], file.read(), content_type)
                     st.success(f"✅ Transaction submitted with {len(uploaded_files)} document(s). OCR validation will complete in a few seconds.")
                     st.info("Refresh the Dashboard tab to see updated status.")
+                except Exception as e:
+                    st.error(e)

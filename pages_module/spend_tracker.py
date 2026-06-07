@@ -167,7 +167,7 @@ def render():
                 try:
                     result = call_metadata_api(txn_id, txn_date_str, amount_str, category, sub_category, file_ext, content_type, comments)
                     upload_to_presigned_url(result['upload_url'], file.read(), content_type)
-                    st.success(f"✅ Transaction submitted with {len(uploaded_files)} document(s). OCR validation will complete in a few seconds.")
+                    st.success(f"✅ Transaction submitted. OCR validation will complete in a few seconds.")
                     st.info("Refresh the Dashboard tab to see updated status.")
                 except Exception as e:
                     st.error(e)

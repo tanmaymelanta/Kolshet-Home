@@ -124,7 +124,7 @@ def render():
             display = filtered[['transaction_id', 'transaction_date', 'category', 'sub_category', 'expected_amount', 'comments', 's3_path']].copy()
             display['s3_path'] = display['s3_path'].str.split('receipt-vault/').str[1]
             display['transaction_date'] = display['transaction_date'].apply(lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%d %b %Y') if len(str(d)) == 8 else d)
-            display.columns = ['Txn ID', 'Date', 'Category', 'Sub Category', 'Amount (₹)', 'Comments', 'Doc Name']
+            display.columns = ['UTR ID', 'Date', 'Category', 'Sub Category', 'Amount (₹)', 'Comments', 'Doc Name']
             st.dataframe(display, use_container_width=True, hide_index=True)
 
     # ── Add transaction tab ───────────────────────────────────────────────────

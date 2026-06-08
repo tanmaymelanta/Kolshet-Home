@@ -25,7 +25,7 @@ DOCUMENT_CATEGORIES = ["Property Money Transactions", "Banking Loan Documents", 
 DOCUMENT_PREFIX = "Important-Documents/"
 
 SPEND_CATEGORIES = {
-    "Property Acquisition": ["Booking Amount", "Down Payment", "Registration", "Stamp Duty", "Brokerage", "Legal Fees"], 
+    "Property Acquisition": ["Booking Amount", "Down Payment", "GST", "Registration", "Stamp Duty", "Brokerage", "Legal Fees"], 
     "Loan & Banking": ["EMI", "EMI Principal", "EMI Interest", "Processing Fee", "Insurance", "Legal Verification"], 
     "Improvement & Interiors": ["Modular Kitchen", "Electrical", "Plumbing", "Painting", "False Ceiling", "AC Installation", "Furniture"], 
     "Maintenance & Society": ["Society Maintenance", "Repairs", "Cleaning", "Security Charges"]

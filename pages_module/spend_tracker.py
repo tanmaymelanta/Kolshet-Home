@@ -5,11 +5,7 @@ import plotly.graph_objects as go
 import requests
 from datetime import date, datetime
 from decimal import Decimal
-from aws_helpers import (
-    get_dynamodb_resource, get_s3_client,
-    TRANSACTIONS_TABLE, SPEND_CATEGORIES, BUCKET_NAME
-)
-
+from aws_helpers import (get_dynamodb_resource, get_s3_client, TRANSACTIONS_TABLE, SPEND_CATEGORIES, BUCKET_NAME)
 API_URL = "https://a59tnednv1.execute-api.ap-south-1.amazonaws.com/dev"
 
 # ── DynamoDB helpers ──────────────────────────────────────────────────────────

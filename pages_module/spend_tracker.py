@@ -118,7 +118,6 @@ def render():
     
             st.markdown("---")
             st.markdown("#### All Transactions")
-            st.dataframe(df)
             category_filter = st.multiselect("Filter by Category", options=df['category'].unique().tolist(), default=df['category'].unique().tolist())
             filtered = df[df['category'].isin(category_filter)]
             display = filtered[['transaction_id', 'transaction_date', 'category', 'sub_category', 'expected_amount', 'comments', 's3_path']].copy()

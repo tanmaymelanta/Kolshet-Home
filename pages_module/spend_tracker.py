@@ -119,14 +119,12 @@ def render():
     
             st.markdown("---")
             st.markdown("#### All Transactions")
-            status_filter = st.multiselect("Filter by status", options=df['status'].unique().tolist(), default=df['status'].unique().tolist())
-            filtered = df[df['status'].isin(status_filter)]
-            status_colors = {'VALIDATED': '🟢', 'AMOUNT_MISMATCH': '🟡', 'OCR_FAILED': '🔴', 'PENDING': '⚪'}
-            display = filtered[['transaction_id', 'transaction_date', 'category', 'sub_category', 'expected_amount', 'status', 'comments', 's3_path']].copy()
-            display['status'] = display['status'].apply(lambda s: f"{status_colors.get(s, '')} {s}")
+            category_filter = st.multiselect("Filter by Category", options=df['category'].unique().tolist(), default=df['category'].unique().tolist())
+            filtered = df[df['category'].isin(category_filter)]
+            display = filtered[['transaction_id', 'transaction_date', 'category', 'sub_category', 'expected_amount', 'comments', 's3_path']].copy()
             display['s3_path'] = display['s3_path'].str.split('receipt-vault/').str[1]
             display['transaction_date'] = display['transaction_date'].apply(lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%d %b %Y') if len(str(d)) == 8 else d)
-            display.columns = ['Txn ID', 'Date', 'Category', 'Sub Category', 'Expected (₹)', 'Status', 'Comments', 'Doc Name']
+            display.columns = ['Txn ID', 'Date', 'Category', 'Sub Category', 'Amount (₹)', 'Comments', 'Doc Name']
             st.dataframe(display, use_container_width=True, hide_index=True)
 
     # ── Add transaction tab ───────────────────────────────────────────────────

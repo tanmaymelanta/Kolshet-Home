@@ -110,7 +110,6 @@ def render():
                 fig_pie.update_traces(textposition='outside', texttemplate='%{label}<br>₹%{value:,.0f}', textfont=dict(color='white', size=14))
                 fig_pie.update_layout(margin=dict(t=10, b=10, l=20, r=20), height=380, uniformtext_minsize=10, uniformtext_mode='show')
                 st.plotly_chart(fig_pie, use_container_width=True)
-    
             with col_right:
                 st.markdown("#### Daily Spend")
                 fig_bar = px.bar(transactions_df, x='transaction_date', y='expected_amount', color_discrete_sequence=["#3498db"], labels={'expected_amount': 'Amount (₹)', 'transaction_date': 'Date'})

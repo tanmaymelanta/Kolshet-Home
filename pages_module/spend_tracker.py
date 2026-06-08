@@ -84,21 +84,15 @@ def render():
         df = load_transactions()
 
         if not df.empty:
-            valid_df = df[df['status'] == 'VALIDATED'].copy()
-            invalid_df = df[df['status'] != 'VALIDATED'].copy()
             transactions_df =df[['transaction_id', 'transaction_date', 'category', 'comments', 'expected_amount']].drop_duplicates().copy()
             transactions_df['transaction_date'] = transactions_df['transaction_date'].apply(lambda d: datetime.strptime(str(d), '%Y%m%d').strftime('%Y-%m-%d') if len(str(d)) == 8 else d[:7])
     
             total_spend = transactions_df['expected_amount'].sum()
             num_txns = len(transactions_df['transaction_id'].unique())
-            valid_count = len(valid_df)
-            invalid_count = len(invalid_df)
     
-            c1, c2, c3, c4 = st.columns(4)
+            c1, c2 = st.columns(2)
             c1.metric("Total Spend", f"₹{total_spend:,.0f}")
             c2.metric("Transactions", num_txns)
-            c3.metric("Valid Documents", valid_count)
-            c4.metric("Invalid Documents", invalid_count)
     
             st.markdown("---")
     

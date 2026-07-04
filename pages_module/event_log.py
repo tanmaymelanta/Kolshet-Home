@@ -49,7 +49,7 @@ def render():
         table = get_table()
         response = table.scan()
         events = response.get("Items", [])
-        events = sorted(events, key=lambda x: x["event_date"])
+        events = sorted(events, key=lambda x: x["event_date"], reverse=True)
     except Exception as e:
         st.error(f"Could not load events: {e}")
         return

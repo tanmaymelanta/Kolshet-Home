@@ -21,12 +21,12 @@ BUCKET_NAME = "kolshet-home-project"
 TRANSACTIONS_TABLE = "house_expenses"
 LOAN_CONFIG_TABLE = "loan_config"
 
-DOCUMENT_CATEGORIES = ["Property Money Transactions", "Banking Loan Documents", "Property Agreement & Registration", "Tax Files"]
+DOCUMENT_CATEGORIES = ["Property Money Transactions", "Banking Loan Documents", "LnT Money Transactions", "Property Agreement & Registration", "Tax Files"]
 DOCUMENT_PREFIX = "Important-Documents/"
 
 SPEND_CATEGORIES = {
     "Property Acquisition": ["Booking Amount", "Down Payment", "GST", "Registration", "Stamp Duty", "Brokerage", "Legal Fees"], 
-    "Loan & Banking": ["EMI", "EMI Principal", "EMI Interest", "Processing Fee", "Insurance", "Legal Verification"], 
+    "Loan & Banking": ["EMI", "Processing Fee", "Insurance", "Legal Verification"], 
     "Improvement & Interiors": ["Modular Kitchen", "Electrical", "Plumbing", "Painting", "False Ceiling", "AC Installation", "Furniture"], 
     "Maintenance & Society": ["Society Maintenance", "Repairs", "Cleaning", "Security Charges"]
 }

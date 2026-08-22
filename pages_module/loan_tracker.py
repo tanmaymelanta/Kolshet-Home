@@ -38,4 +38,4 @@ def render():
   st.plotly_chart(fig, use_container_width=True)
 
   st.divider()
-  st.dataframe(df)
+  st.dataframe(df, use_container_width=True, hide_index=True)
